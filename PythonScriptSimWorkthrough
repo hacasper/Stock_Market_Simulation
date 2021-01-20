@@ -8,4 +8,18 @@ warnings.filterwarnings("ignore")
 
 prices = pd.read_csv("AAPL_since2000_daily.csv", index_col="Date", parse_dates=True, usecols=['Date','AdjClose'], nrows=20)
 volumechanges = pd.read_csv("AAPL_since2000_daily.csv", index_col="Date", usecols=['Date', 'AdjClose'], parse_dates=True, nrows=50).pct_change()*100
-print (volumechanges)
+volumechanges=volumechanges.dropna()
+print(volumechanges)
+
+today = dt.date(2000, 1, 19)
+simend = dt.date(2021, 1, 19)
+tickers = []
+transactionid = 0
+money = 1000000
+portfolio = {}
+activelog = []
+transactionlog = []
+
+def getprice(date, ticker):
+    global prices
+    return prices.loc[date][ticker]
