@@ -18,17 +18,24 @@ class market:
     def market_description(self):
         return "price on " + self.date + "is $" + self.price
 
+    #still working
     def getMarketPrice(self):
         if(self.ticker == "AAPL") :
             with open ('AAPL_since2000_daily.csv') as stockdata:
                 priceread = pd.read_csv(stockdata)
                 return self.price
+        if(self.ticker == "BIT"):
+            with open('Bitcoin_Min_Jan20.csv') as stockdata:
+                priceread = pd.read_csv(stockdata)
+                price = 
+                return self.priceq
+
 
 def main():
     tr1 = trader(100000, "ETH")
     print("trader owns " + tr1.portfolio + " and $" + str(tr1.bank) + " left in the bank")
 
-    m1 = market("AAPL", "1/19/2021", getMarketPrice())
+    m1 = market("AAPL", "1/19/2021", 100)
     print("market price for " + m1.ticker + " on " + m1.date + " is " + str(m1.price))
 
 if __name__ == "__main__":
