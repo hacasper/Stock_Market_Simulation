@@ -7,7 +7,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 prices = pd.read_csv("AAPL_since2000_daily.csv", index_col="Date", parse_dates=True, usecols=['Date','AdjClose'], nrows=20)
-volumechanges = pd.read_csv("AAPL_since2000_daily.csv", index_col="Date", usecols=['Date', 'AdjClose'], parse_dates=True, nrows=50).pct_change()*100
+volumechanges = pd.read_csv("AAPL_since2000_daily.csv", index_col="Date", usecols=['Date', 'Volume'], parse_dates=True, nrows=50).pct_change()*100
 volumechanges=volumechanges.dropna()
 print(volumechanges)
 
