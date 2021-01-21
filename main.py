@@ -3,34 +3,28 @@ import datetime
 import math
 import csv  
 
-class trader:
-    #creates trader object with set bank value and portfolio value
-    def __init__(self, bank, portfolio):
-        self.bank = bank
-        self.portfolio = portfolio
+from Classes import trader 
+from Classes import market
 
-class market:
-    def __init__(self, ticker, date, price):
-        self.ticker = ticker
-        self.date = date
-        self.price = price
-    
-    def market_description(self):
-        return "price on " + self.date + "is $" + self.price
 
-    def getMarketPrice(self):
-        if(self.ticker == "AAPL") :
-            with open ('AAPL_since2000_daily.csv') as stockdata:
-                priceread = pd.read_csv(stockdata)
-                return self.price
+df = pd.read_csv ("Bitcoin_Min_Jan20.csv")
+dim=df.shape[0]
 
-def main():
-    tr1 = trader(100000, "ETH")
-    print("trader owns " + tr1.portfolio + " and $" + str(tr1.bank) + " left in the bank")
+buffer=24*60*14 #amount of time before t0 we use for preds at t0
 
-    m1 = market("AAPL", "1/19/2021", getMarketPrice())
-    print("market price for " + m1.ticker + " on " + m1.date + " is " + str(m1.price))
+for t in range (0,dim):
+    #This is Simulating time
 
-if __name__ == "__main__":
-    main()
+
+
+#df.columns
+# def main():
+#     tr1 = trader(100000, "ETH")
+#     print("trader owns " + tr1.portfolio + " and $" + str(tr1.bank) + " left in the bank")
+
+#     m1 = market("AAPL", "1/19/2021", market.getMarketPrice)
+#     print("market price for " + m1.ticker + " on " + m1.date + " is " + str(m1.price))
+
+# if __name__ == "__main__":
+#     main()
     
