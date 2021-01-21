@@ -34,7 +34,7 @@ for t in range(t0,row_count):
     t1 = list(range(t-days_ma_1,t))
     Set1=AAPL.iloc[t1,:]
     Sum1=Set1.sum(axis=0)
-    #Gives me the indeces for second moving average
+    #Gives me the indeceas for second moving average
     t2 = list(range(t-days_ma_2,t))
     Set2=AAPL.iloc[t2,:]
     Sum2=Set2.sum(axis=0)
