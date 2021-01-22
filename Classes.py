@@ -6,6 +6,7 @@ Created on Thu Jan 21 14:26:39 2021
 """
 import pandas as pd
 import datetime
+import numpy as np
 import math
 import csv 
 
@@ -31,3 +32,12 @@ class market:
                 priceread = pd.read_csv(stockdata)
                 
                 return self.price
+            
+class pred:
+    def __init__(self,horizon):
+        self.RSI=0
+        self.p1=0
+        self.p10=[0,0,0,0,0,0,0,0,0,0]
+        self.p30=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        self.hist10=np.empty([horizon,10])
+        self.hist100=np.empty(horizon,100)
