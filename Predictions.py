@@ -9,7 +9,7 @@ Created on Fri Jan 22 14:52:27 2021
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from tensorflow import keras
+#from tensorflow import keras
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
@@ -26,13 +26,19 @@ X_train = []
 X_test = []
 y_train = []
 
-Lookback=24*5*7 #(1/12 of overall buffer)
+Lookback=60 #(1/12 of overall buffer)
 
-for i in range(Lookback, 12*Lookback):
+t1=9180
+
+
+for i in range(Lookback, t1):
     X_train.append(scaled[i-Lookback:i, 0])
-    X_test.append(scaled[11*Lookback+i:12*Lookback+i,0])
+    X_test.append(scaled[t1-Lookback+i:t1+i,0])
     y_train.append(scaled[i:i+10, 0])
     
+    
+
+
 
 X_train, y_train  = np.array(X_train), np.array(y_train)
 X_test = np.array(X_test)
@@ -62,7 +68,11 @@ regressor.fit(X_train, y_train, epochs = 100, batch_size = 50)
 
 pred = pd.DataFrame(regressor.predict(X_test))
 
-t=list(range(0,2*9240))
+t=list(range(0,2*t1))
 
-plt.plot(t,scaled[0:2*9240,0])
-plt.plot(t[9240:2*9240],pred.iloc[:,0]) 
+
+regressor.save('model3')
+
+
+plt.plot(t,scaled[0:2*t1,0])
+plt.plot(t[t1:2*t1],pred.iloc[:,0]) 
