@@ -22,6 +22,7 @@ class market:
         self.ticker = ticker
         self.date = date
         self.price = price
+        #self.hist = [] 
     
     def market_description(self):
         return "price on " + self.date + "is $" + self.price
