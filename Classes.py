@@ -26,12 +26,8 @@ class market:
     def market_description(self):
         return "price on " + self.date + "is $" + self.price
 
-    def getMarketPrice(self):
-        if(self.ticker == "AAPL") :
-            with open ('AAPL_since2000_daily.csv') as stockdata:
-                priceread = pd.read_csv(stockdata)
-                
-                return self.price
+    #def getMarketPrice(self):
+    #add market file here
             
 class pred:
     def __init__(self,horizon):
