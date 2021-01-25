@@ -1,4 +1,4 @@
-da# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Created on Sun Jan 17 17:49:57 2021
 
@@ -70,23 +70,23 @@ headers = {
 
 
 #Get Ether Minute data for January 2018
-respETH = requests.get('https://rest.coinapi.io/v1/ohlcv/COINBASE_SPOT_ETH_USD/history?period_id=1MIN&time_start=2020-01-01&time_end=2020-02-01&limit=100000&include_empty_items=1',headers=headers)
+#respETH = requests.get('https://rest.coinapi.io/v1/ohlcv/COINBASE_SPOT_ETH_USD/history?period_id=1MIN&time_start=2020-01-01&time_end=2020-02-01&limit=100000&include_empty_items=1',headers=headers)
 
-data_ETH = pd.read_json(respETH.text)
-data_ETH.to_csv('Ether_Min_Jan20.csv')
+#data_ETH = pd.read_json(respETH.text)
+#data_ETH.to_csv('Ether_Min_Jan20.csv')
 
 
 #Get Bitcoin daily data 2018-2021
-respBTCd = requests.get('https://rest.coinapi.io/v1/ohlcv/COINBASE_SPOT_BTC_USD/history?period_id=1DAY&time_start=2018-01-01&time_end=2021-01-01&limit=100000&include_empty_items=1',headers=headers)
+# respBTCd = requests.get('https://rest.coinapi.io/v1/ohlcv/COINBASE_SPOT_BTC_USD/history?period_id=1DAY&time_start=2018-01-01&time_end=2021-01-01&limit=100000&include_empty_items=1',headers=headers)
 
-data_BTCd = pd.read_json(respBTCd.text)
-data_BTCd.to_csv('Bitcoin_Day_1820.csv')
+# data_BTCd = pd.read_json(respBTCd.text)
+# data_BTCd.to_csv('Bitcoin_Day_1820.csv')
 
-#Get Ether daily data 2018-2021
-respETHd = requests.get('https://rest.coinapi.io/v1/ohlcv/COINBASE_SPOT_ETH_USD/history?period_id=1DAY&time_start=2018-01-01&time_end=2021-01-01&limit=100000&include_empty_items=1',headers=headers)
+# #Get Ether daily data 2018-2021
+# respETHd = requests.get('https://rest.coinapi.io/v1/ohlcv/COINBASE_SPOT_ETH_USD/history?period_id=1DAY&time_start=2018-01-01&time_end=2021-01-01&limit=100000&include_empty_items=1',headers=headers)
 
-data_ETHd = pd.read_json(respETHd.text)
-data_ETHd.to_csv('Ether_Day_1820.csv')
+# data_ETHd = pd.read_json(respETHd.text)
+# data_ETHd.to_csv('Ether_Day_1820.csv')
 
 
 #Get Bitcoin hourly data 2018-2021
