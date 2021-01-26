@@ -8,7 +8,7 @@ Created on Fri Jan 22 14:52:27 2021
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-#from tensorflow import keras
+from tensorflow import keras
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
@@ -20,6 +20,9 @@ from sklearn.preprocessing import MinMaxScaler
 def MiMaScaler(data, mi, ma, i):
     sca = (data.iloc[i:,:] - mi)/(ma - mi)
     return sca.iloc[:,:]
+
+
+#Good models: 14, (15?), 16, 17
 
 t1=24*60*7
 
@@ -34,8 +37,8 @@ sc_cl = MinMaxScaler(feature_range = (0, 1))
 sc_classic = sc_cl.fit_transform(raw2)
 
 
-Lookback=100 #Amount of Inputs
-Window = 10 #Amount of Datapoints to Calc run Mean
+Lookback=70 #Amount of Inputs
+Window = 10 #Amount of Datapoints to Calc run Mean (EVEN)
 Outlook = 1 #Amount of Outputs
 
 scaled=raw
@@ -82,48 +85,48 @@ X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
 
 regressor = Sequential()
 
-regressor.add(LSTM(units = 80, return_sequences = True, input_shape = (X_train.shape[1], 1)))
+regressor.add(LSTM(units = 50, return_sequences = True, input_shape = (X_train.shape[1], 1)))
 
-regressor.add(LSTM(units = 80, return_sequences = True))
+regressor.add(LSTM(units = 50, return_sequences = True))
 regressor.add(Dropout(0.1))
 
-regressor.add(LSTM(units = 80, return_sequences = True))
+regressor.add(LSTM(units = 50, return_sequences = True))
 regressor.add(Dropout(0.1))
 
-regressor.add(LSTM(units = 80))
+regressor.add(LSTM(units = 50))
 
 regressor.add(Dense(units = Outlook)) #Amount of Outputs
 
 regressor.compile(optimizer = 'adam', loss = 'mean_squared_error')
 
-regressor.fit(X_train, y_train, epochs = 100, batch_size = 50)
+regressor.fit(X_train, y_train, epochs = 150, batch_size = 50)
 
 pred = pd.DataFrame(regressor.predict(X_test))
 
 t=np.array(list(range(0,2*t1)))
 
 
-regressor.save('model14')
+regressor.save('model17')
 
 
 plt.plot(t[Lookback:],scaled2.iloc[Lookback:,0])
 
-plt.plot(t[t1+5:2*t1-Lookback+5-Window-Window],pred.iloc[:,0])
+plt.plot(t[t1+3:2*t1-Lookback+3-Window-Window],pred.iloc[:,0])
 plt.show()
 #t1=t1+50
-a=1100
-mrks=list(range(a,a+200,10))
-x=list(range(t1+105+a,t1+105+a+200,10))
-plt.plot(t[t1+100+a:t1+300+a],scaled2.iloc[t1+100+a:t1+300+a,0])
+a=3400
+mrks=list(range(a,a+300,10))
+x=list(range(t1+a,t1+a+300,10))
+plt.plot(t[t1+a:t1+300+a],scaled2.iloc[t1+a:t1+300+a,0])
 plt.plot(t[x],pred.iloc[mrks,0],marker="o") 
 plt.show()
 
 x=list(range(t1+a,t1+a+500,50))
-mrks=list(range(0+a,a+500,50))
+mrks=list(range(a,a+500,50))
 plt.plot(t[t1+a:t1+a+500],scaled2.iloc[t1+a:t1+a+500,0])
 plt.plot(t[x],pred.iloc[mrks,0],marker="o")
 # plt.plot(t[t1+10:t1+12],pred.iloc[10,:]) 
 # plt.plot(t[t1+20:t1+22],pred.iloc[20,:]) 
 # plt.plot(t[t1+30:t1+32],pred.iloc[30,:]) 
 # plt.plot(t[t1+40:t1+42],pred.iloc[40,:]) 
-# plt.show()
+plt.show()

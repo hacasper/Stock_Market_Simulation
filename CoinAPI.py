@@ -88,16 +88,15 @@ headers = {
 # data_ETHd = pd.read_json(respETHd.text)
 # data_ETHd.to_csv('Ether_Day_1820.csv')
 
-
 #Get Bitcoin hourly data 2018-2021
-respBTCh = requests.get('https://rest.coinapi.io/v1/ohlcv/COINBASE_SPOT_BTC_USD/history?period_id=1HOUR&time_start=2018-01-01&time_end=2021-01-01&limit=100000&include_empty_items=1',headers=headers)
+# respBTCh = requests.get('https://rest.coinapi.io/v1/ohlcv/COINBASE_SPOT_BTC_USD/history?period_id=1HRS&time_start=2018-01-01&time_end=2021-01-01&limit=100000&include_empty_items=1',headers=headers)
 
-data_BTCh = pd.read_json(respBTCh.text)
-data_BTCh.to_csv('Bitcoin_Hour_1820.csv')
+# data_BTCh = pd.read_json(respBTCh.text)
+# data_BTCh.to_csv('Bitcoin_Hour_1820.csv')
 
 
 #Get Ether hourly data 2018-2021
-respETHh = requests.get('https://rest.coinapi.io/v1/ohlcv/COINBASE_SPOT_ETH_USD/history?period_id=1HOUR&time_start=2018-01-01&time_end=2021-01-01&limit=100000&include_empty_items=1',headers=headers)
+respETHh = requests.get('https://rest.coinapi.io/v1/ohlcv/COINBASE_SPOT_ETH_USD/history?period_id=1HRS&time_start=2018-01-01&time_end=2021-01-01&limit=100000&include_empty_items=1',headers=headers)
 
 data_ETHh = pd.read_json(respETHh.text)
 data_ETHh.to_csv('Ether_Hour_1820.csv')
