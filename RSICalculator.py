@@ -7,8 +7,8 @@ from datetime import timedelta
 
 from Classes import market
 
-dfBTC = pd.read_csv("Bitcoin_Day_1820.csv")
-dfETH = pd.read_csv("Ether_Day_1820.csv")
+dfBTC = pd.read_csv("Data/Bitcoin_Day_1820.csv")
+dfETH = pd.read_csv("Data/Ether_Day_1820.csv")
 rsp1 = 14
 
 delta = timedelta(days=rsp1)
@@ -17,7 +17,7 @@ delta = timedelta(days=rsp1)
 today = dt.date(2020,9,5)
 
 dates = dfBTC.iloc[:,1]
-dfBTCdates = pd.read_csv("Bitcoin_Day_1820.csv", index_col="time_period_start", parse_dates=True, usecols=['time_period_start','price_open','price_close'])
+dfBTCdates = pd.read_csv("Data/Bitcoin_Day_1820.csv", index_col="time_period_start", parse_dates=True, usecols=['time_period_start','price_open','price_close'])
 fourteendays = today - delta
 getfourteendays = dfBTCdates.loc[fourteendays:today]
 getfourteendays["difference"] = getfourteendays["price_close"] - getfourteendays["price_open"]
