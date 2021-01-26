@@ -61,7 +61,6 @@ for t in range (buffer,dim):
     
     Hist[t,:]=np.array(df.iloc[t,5:9])
     t=+1
-    
 
 
 #df.columns
