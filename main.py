@@ -47,29 +47,29 @@ Hist[0:buffer-1,:] = np.array(df.iloc[0:buffer-1,5:9])
 m=market('ETH',df.iloc[buffer-1,1],df.iloc[buffer-1,5])
 
 
-for t in range (buffer,dim):
-    #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
-    
-    #Current Market with opening timestamp:
-    m=market('ETH',df.iloc[t,1],df.iloc[t,5])
-    Closing[t-buffer]=m.price
-    
-    
-    if t % 1000 == 0:
-        print("market price for " + m.ticker + " on " + m.date + " is " + str(m.price))
+def main():
+    for t in range (buffer,dim):
+        #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
+
+        #get market price at time t
+
+        #prediction
+        #output will be average price in 5 minutes
+
+        #get RSI from RSICalculator.py
+
+        #trader: using RSI and market price make trading decision
+
+        #update trader's portfolio/bank value based on trading decision
+
+        #Current Market with opening timestamp: 
+        m=market('ETH',df.iloc[t,1],df.iloc[t,5])
+        Closing[t-buffer]=m.price
         
-    
-    Hist[t,:]=np.array(df.iloc[t,5:9])
-    t=+1
+        if t % 1000 == 0:
+            print("market price for " + m.ticker + " on " + m.date + " is " + str(m.price))
+            
+        Hist[t,:]=np.array(df.iloc[t,5:9])
 
-
-#df.columns
-# def main():
-#     tr1 = trader(100000, "ETH")
-#     print("trader owns " + tr1.portfolio + " and $" + str(tr1.bank) + " left in the bank")
-
-#     m1 = market("AAPL", "1/19/2021", market.getMarketPrice)
-#     print("market price for " + m1.ticker + " on " + m1.date + " is " + str(m1.price))
-# if __name__ == "__main__":
-#     main()
-    
+if __name__ == "__main__":
+    main()
