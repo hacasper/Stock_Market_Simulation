@@ -12,8 +12,11 @@ bitData = pd.read_csv("Bitcoin_Min_Jan20.csv")
 
 def getStockOrder (n, order, date):
     infoAtDate = bitData.loc[bitData['time_period_start'] == date]
+    
+    #verify the col index****
     stockPrice = infoAtDate.iloc[0,8]
     print(str(stockPrice))
+    
     #let order be value 1, 0, -1
     #let n be int for number of shares
     if order == 0:
