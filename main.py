@@ -52,9 +52,11 @@ m=market('ETH',df.iloc[buffer-1,1],df.iloc[buffer-1,5])
 def main():
     for t in range (buffer,dim):
         #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
-
-        #get market price at time t
         
+        #get market price at time t
+        #Current Market with opening timestamp: 
+        m=market('ETH',df.iloc[t,1],df.iloc[t,5])
+        Closing[t-buffer]=m.price
         #prediction
         #output will be average price in 5 minutes
         predi =  Pred16(Hist[:,0],m16,t)      
@@ -64,10 +66,6 @@ def main():
         #trader: using RSI and market price make trading decision
 
         #update trader's portfolio/bank value based on trading decision
-
-        #Current Market with opening timestamp: 
-        m=market('ETH',df.iloc[t,1],df.iloc[t,5])
-        Closing[t-buffer]=m.price
         
         if t % 1000 == 0:
             print("market price for " + m.ticker + " on " + m.date + " is " + str(m.price))
