@@ -14,15 +14,16 @@ from tensorflow.keras.models import load_model
 
 
 
-mo6 = load_model('PredModels/model16/')
+ # mod6 = load_model('PredModels/model16/')
 
 
-#Scaling Factors: Same as Used in Training!
-# def Pred16(prices,mo16):
-#     mi = 31.8575
-#     ma = 269.22
-#     scaled = (prices-mi) / (ma-mi)
-#     # Pr = mod16.predict(scaled)
-#     # return Pr
+# Scaling Factors: Same as Used in Training!
+def Pred16(prices,mo16,t):
+    Lookback = 60
+    mi = 31.8575
+    ma = 269.22
+    scaled = (prices[t-1-Lookback:t-1,:]-mi) / (ma-mi)
+    Pr = mo16.predict(scaled)
+    return Pr
 
 

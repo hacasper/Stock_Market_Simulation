@@ -8,7 +8,7 @@ from tensorflow.keras.models import load_model
 
 from Classes import trader 
 from Classes import market
-m16 = load_model("/PredModels/model16")
+m16 = load_model("PredModels/model16")
 from preds import Pred16
 
 
@@ -57,8 +57,8 @@ def main():
         
         #prediction
         #output will be average price in 5 minutes
-        #predi =  Pred16(Hist[t-Lookback:t,3],m16)      
-        #PredHist[t]=predi
+        predi =  Pred16(Hist[:,0],m16,t)      
+        PredHist[t]=predi
         #get RSI from RSICalculator.py
 
         #trader: using RSI and market price make trading decision
