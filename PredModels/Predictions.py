@@ -24,6 +24,10 @@ def MiMaScaler(data, mi, ma, i):
 
 #Good models: 14, (15?), 16, 17
 
+#model 18: 60, 50, 10(5)
+#model 19: 75, 60, 10(5)
+
+
 t1=24*60*7
 
 df = pd.read_csv ('../Data/Ether_Min_Jan20.csv')
@@ -37,7 +41,7 @@ sc_cl = MinMaxScaler(feature_range = (0, 1))
 sc_classic = sc_cl.fit_transform(raw2)
 
 
-Lookback=100 #Amount of Inputs
+Lookback=75 #Amount of Inputs
 Window = 10 #Amount of Datapoints to Calc run Mean (EVEN)
 Outlook = 1 #Amount of Outputs
 
@@ -85,28 +89,28 @@ X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
 
 regressor = Sequential()
 
-regressor.add(LSTM(units = 80, return_sequences = True, input_shape = (X_train.shape[1], 1)))
+regressor.add(LSTM(units = 60, return_sequences = True, input_shape = (X_train.shape[1], 1)))
 
-regressor.add(LSTM(units = 80, return_sequences = True))
+regressor.add(LSTM(units = 60, return_sequences = True))
 regressor.add(Dropout(0.1))
 
-regressor.add(LSTM(units = 80, return_sequences = True))
+regressor.add(LSTM(units = 60, return_sequences = True))
 regressor.add(Dropout(0.1))
 
-regressor.add(LSTM(units = 80))
+regressor.add(LSTM(units = 60))
 
 regressor.add(Dense(units = Outlook)) #Amount of Outputs
 
 regressor.compile(optimizer = 'adam', loss = 'mean_squared_error')
 
-regressor.fit(X_train, y_train, epochs = 150, batch_size = 50)
+regressor.fit(X_train, y_train, epochs = 50, batch_size = 50)
 
 pred = pd.DataFrame(regressor.predict(X_test))
 
 t=np.array(list(range(0,2*t1)))
 
 
-regressor.save('model18')
+regressor.save('model19')
 
 
 plt.plot(t[Lookback:],scaled2.iloc[Lookback:,0])

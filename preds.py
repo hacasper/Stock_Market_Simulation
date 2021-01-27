@@ -22,8 +22,9 @@ def Pred16(prices,mo16,t):
     Lookback = 60
     mi = 31.8575
     ma = 269.22
-    scaled = (prices[t-1-Lookback:t-1,:]-mi) / (ma-mi)
-    Pr = mo16.predict(scaled)
+    scaled = (prices[t-1-Lookback:t-1]-mi) / (ma-mi)
+    Prsc = mo16.predict(scaled)
+    Pr = Prsc*(ma-mi)+mi
     return Pr
 
 

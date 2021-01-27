@@ -16,7 +16,7 @@ dfBTC = pd.read_csv ("Data/Bitcoin_Min_Jan20.csv")
 df = pd.read_csv ("Data/Ether_Min_Jan20.csv")
 dim=df.shape[0]
 
-#pd.concat([dfBTC,dfETH]).drop_duplicates(subset = ['col2'], keep=False)
+#pd.concat([dfBTC,dfETH]).drop_duplicates(subset = Pr['col2'], keep=False)
 
 buffer=24*60*7 #1 Week data to use for models
 Lookback=60 #Amount of data that the Prediction Model Needs
