@@ -4,20 +4,22 @@ import math
 import csv  
 import numpy as np
 import matplotlib.pyplot as plt
-
+from tensorflow.keras.models import load_model
 
 from Classes import trader 
 from Classes import market
+m16 = load_model("/PredModels/model16")
+from preds import Pred16
 
 
-dfBTC = pd.read_csv ("Bitcoin_Min_Jan20.csv")
-df = pd.read_csv ("Ether_Min_Jan20.csv")
+dfBTC = pd.read_csv ("Data/Bitcoin_Min_Jan20.csv")
+df = pd.read_csv ("Data/Ether_Min_Jan20.csv")
 dim=df.shape[0]
 
 #pd.concat([dfBTC,dfETH]).drop_duplicates(subset = ['col2'], keep=False)
 
 buffer=24*60*7 #1 Week data to use for models
-
+Lookback=60 #Amount of data that the Prediction Model Needs
 horizon=dim-buffer #amount of timestamps in the for loop
 
 
@@ -40,9 +42,9 @@ plt.show()
 #Once we have models that work we either pull recent data and test  on that
 #or we can just use only partial amounts of the datasets to calibrate and then test
 
-
 Closing = np.empty([horizon,1])
 Hist = np.empty([horizon,4])
+PredHist = np.empty([horizon,1])
 Hist[0:buffer-1,:] = np.array(df.iloc[0:buffer-1,5:9])
 m=market('ETH',df.iloc[buffer-1,1],df.iloc[buffer-1,5])
 
@@ -52,10 +54,11 @@ def main():
         #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
 
         #get market price at time t
-
+        
         #prediction
         #output will be average price in 5 minutes
-
+        #predi =  Pred16(Hist[t-Lookback:t,3],m16)      
+        #PredHist[t]=predi
         #get RSI from RSICalculator.py
 
         #trader: using RSI and market price make trading decision

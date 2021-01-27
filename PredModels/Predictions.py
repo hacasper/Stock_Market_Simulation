@@ -26,7 +26,7 @@ def MiMaScaler(data, mi, ma, i):
 
 t1=24*60*7
 
-df = pd.read_csv ("Ether_Min_Jan20.csv")
+df = pd.read_csv ('../Data/Ether_Min_Jan20.csv')
 raw = df.iloc[0:t1,np.array([5,6])]
 raw2 = df.iloc[0:2*t1,np.array([5,6])]
 
@@ -37,7 +37,7 @@ sc_cl = MinMaxScaler(feature_range = (0, 1))
 sc_classic = sc_cl.fit_transform(raw2)
 
 
-Lookback=70 #Amount of Inputs
+Lookback=100 #Amount of Inputs
 Window = 10 #Amount of Datapoints to Calc run Mean (EVEN)
 Outlook = 1 #Amount of Outputs
 
@@ -85,15 +85,15 @@ X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
 
 regressor = Sequential()
 
-regressor.add(LSTM(units = 50, return_sequences = True, input_shape = (X_train.shape[1], 1)))
+regressor.add(LSTM(units = 80, return_sequences = True, input_shape = (X_train.shape[1], 1)))
 
-regressor.add(LSTM(units = 50, return_sequences = True))
+regressor.add(LSTM(units = 80, return_sequences = True))
 regressor.add(Dropout(0.1))
 
-regressor.add(LSTM(units = 50, return_sequences = True))
+regressor.add(LSTM(units = 80, return_sequences = True))
 regressor.add(Dropout(0.1))
 
-regressor.add(LSTM(units = 50))
+regressor.add(LSTM(units = 80))
 
 regressor.add(Dense(units = Outlook)) #Amount of Outputs
 
@@ -106,7 +106,7 @@ pred = pd.DataFrame(regressor.predict(X_test))
 t=np.array(list(range(0,2*t1)))
 
 
-regressor.save('model17')
+regressor.save('model18')
 
 
 plt.plot(t[Lookback:],scaled2.iloc[Lookback:,0])
@@ -114,7 +114,7 @@ plt.plot(t[Lookback:],scaled2.iloc[Lookback:,0])
 plt.plot(t[t1+3:2*t1-Lookback+3-Window-Window],pred.iloc[:,0])
 plt.show()
 #t1=t1+50
-a=3400
+a=0
 mrks=list(range(a,a+300,10))
 x=list(range(t1+a,t1+a+300,10))
 plt.plot(t[t1+a:t1+300+a],scaled2.iloc[t1+a:t1+300+a,0])
