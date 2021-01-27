@@ -23,7 +23,9 @@ def Pred16(prices,mo16,t):
     mi = 31.8575
     ma = 269.22
     scaled = (prices[t-1-Lookback:t-1]-mi) / (ma-mi)
-    Prsc = mo16.predict(scaled)
+    X_test = np.array(scaled)
+    X_test = np.reshape(X_test, (1, X_test.shape[0], 1))
+    Prsc = mo16.predict(X_test)
     Pr = Prsc*(ma-mi)+mi
     return Pr
 

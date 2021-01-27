@@ -19,7 +19,7 @@ dim=df.shape[0]
 #pd.concat([dfBTC,dfETH]).drop_duplicates(subset = Pr['col2'], keep=False)
 
 buffer=24*60*7 #1 Week data to use for models
-Lookback=60 #Amount of data that the Prediction Model Needs
+Lookback=75 #Amount of data that the Prediction Model Needs
 horizon=dim-buffer #amount of timestamps in the for loop
 
 
@@ -43,7 +43,7 @@ plt.show()
 #or we can just use only partial amounts of the datasets to calibrate and then test
 
 Closing = np.empty([horizon,1])
-Hist = np.empty([horizon,4])
+Hist = np.empty([dim,4])
 PredHist = np.empty([horizon,1])
 Hist[0:buffer-1,:] = np.array(df.iloc[0:buffer-1,5:9])
 m=market('ETH',df.iloc[buffer-1,1],df.iloc[buffer-1,5])
@@ -58,7 +58,7 @@ def main():
         #prediction
         #output will be average price in 5 minutes
         predi =  Pred16(Hist[:,0],m16,t)      
-        PredHist[t]=predi
+        PredHist[t-buffer]=predi
         #get RSI from RSICalculator.py
 
         #trader: using RSI and market price make trading decision

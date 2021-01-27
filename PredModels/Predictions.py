@@ -30,7 +30,7 @@ def MiMaScaler(data, mi, ma, i):
 
 t1=24*60*7
 
-df = pd.read_csv ('../Data/Ether_Min_Jan20.csv')
+df = pd.read_csv ('./Data/Ether_Min_Jan20.csv')
 raw = df.iloc[0:t1,np.array([5,6])]
 raw2 = df.iloc[0:2*t1,np.array([5,6])]
 
