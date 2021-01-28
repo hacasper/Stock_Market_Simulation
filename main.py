@@ -74,3 +74,11 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+plt.plot(Mins[0:10000],PredHist[0:10000])
+plt.plot(Mins[0:10000],df.iloc[buffer:buffer+10000:,5])
+plt.show()
+
+plt.plot(Mins[-10000:],PredHist[-10000:])
+plt.plot(Mins[-10000:],df.iloc[dim-10000:,5])
+plt.show()
