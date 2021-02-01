@@ -16,7 +16,7 @@ class trader:
     def __init__(self, bank, portfolio):
         self.bank = bank
         self.portfolio = portfolio
-
+        
 class market:
     def __init__(self, ticker, date, price):
         self.ticker = ticker

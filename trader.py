@@ -13,7 +13,7 @@ import numpy as np
 
 def RSIblind(Hist,RSP,t,gain,loss,RSI):
     if RSI == 0:
-        val=Hist[t-RSP:t,0]
+        val=Hist[t-RSP:t,3]
         var1=np.diff(val)
         dim=var1.size
         
@@ -21,35 +21,39 @@ def RSIblind(Hist,RSP,t,gain,loss,RSI):
         loss = 0
         for i in range(0,dim-1):
             if var1[i]>0:
-                gain = gain + var1.iloc[i]
+                gain = gain + var1[i]
             else:
-                loss = loss - var1.iloc[i]
+                loss = loss - var1[i]
         rs = gain/loss
+        gain=gain/14
+        loss=loss/14
         rsi = 100-(100/(1+rs))
         return gain, loss, rsi 
     else:
-        if var1[RSP-1] > 0:
-            cg = var1[RSP-1]
+        val=Hist[t-RSP:t,3]
+        var1=np.diff(val)
+        if var1[RSP-2] > 0:
+            cg = var1[RSP-2]
             cl = 0
         else:
-            cl = -var1[RSP-1]
+            cl = -var1[RSP-2]
             cg = 0
-        gain = gain*(RSP-1)+cg
-        loss = loss*(RSP-1)+cl
-        rsi = 100-(100/(1+(gain*(RSP-1)+cg)/(loss*(RSP-1)+cl)))       
+        rsi = 100-(100/(1+(gain*(RSP-2)+cg)/(loss*(RSP-2)+cl)))       
+        gain = (gain*(RSP-2)+cg)/14
+        loss = (loss*(RSP-2)+cl)/14
         return gain, loss, rsi
         
     
 def StupidTrader(Hist, RSP,t,gain,loss,RSI,order):
-    gain, loss, RSI = RSIblind(Hist,RSP,t,gain,loss,RSI)
-    if RSI > 70 and order != 1:
+    gain, loss, rsindex = RSIblind(Hist,RSP,t,gain,loss,RSI)
+    if rsindex > 70: #and order != 1:
         order = 1
-    if RSI > 70 and order == 1:
+    #if RSI > 70 and order == 1:
+        #order = 0
+    if 30 < rsindex < 70:
         order = 0
-    if 30 < RSI < 70:
-        order = 0
-    if RSI < 30 and order != -1:
+    if rsindex < 30: #and order != -1:
         order = -1
-    if RSI < 30 and order == -1:
-        order = 0
-    return order
+    #if RSI < 30 and order == -1:
+        #order = 0
+    return order, loss, gain, rsindex
