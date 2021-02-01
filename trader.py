@@ -50,6 +50,6 @@ def StupidTrader(Hist, RSP,t,gain,loss,RSI,order):
         order = 0
     if RSI < 30 and order != -1:
         order = -1
-    if if RSI < 30 and order == -1:
+    if RSI < 30 and order == -1:
         order = 0
     return order
