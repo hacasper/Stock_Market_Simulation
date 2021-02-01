@@ -10,7 +10,8 @@ from Classes import trader
 from Classes import market
 m16 = load_model("PredModels/model16")
 from preds import Pred16
-from market import getStockOrder
+from market import getStockOrder, getCurrentPrice
+from test_trader import makeOrder
 
 dfBTC = pd.read_csv ("Data/Bitcoin_Min_Jan20.csv")
 df = pd.read_csv ("Data/Ether_Min_Jan20.csv")
@@ -52,9 +53,15 @@ m=market('ETH',df.iloc[buffer-1,1],df.iloc[buffer-1,5])
 def main():
     for t in range (buffer,dim):
         #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
-        current_date = df.iloc[t,1]
 
+
+        current_date = df.iloc[t,1]
+        current_price = getCurrentPrice(current_date)
+        
         #test_trader
+        test = trader(400000, 0)
+        test_order = makeOrder(current_price, test)
+        getStockOrder(1, test_order, current_date, test)
 
         #trader 1: only RSI LIONEL
 
