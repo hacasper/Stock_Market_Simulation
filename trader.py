@@ -38,9 +38,9 @@ def RSIblind(Hist,RSP,t,gain,loss,RSI):
         else:
             cl = -var1[RSP-2]
             cg = 0
-        rsi = 100-(100/(1+(gain*(RSP-2)+cg)/(loss*(RSP-2)+cl)))       
         gain = (gain*(RSP-2)+cg)/14
-        loss = (loss*(RSP-2)+cl)/14
+        loss = (loss*(RSP-2)+cl)/14  
+        rsi = 100-(100/(1+(gain)/(loss)))       
         return gain, loss, rsi
         
     
