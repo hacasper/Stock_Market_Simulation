@@ -10,7 +10,6 @@ from Classes import trader
 bitData = pd.read_csv("Data/Bitcoin_Min_Jan20.csv")
 ethData = pd.read_csv("Data/Ether_Min_Jan20.csv")
 
-tr = trader(50000, 0)
 
 def getCurrentPrice(date):
     infoAtDate = ethData.loc[bitData['time_period_start'] == date]
@@ -46,4 +45,3 @@ def getStockOrder (n, order, date, trader):
         print("Adding $" + str(saleprice) + " to bank")
         print("Removing " + str(n) + " shares from portfolio")
 
-getStockOrder(1, 1, '2020-01-01T00:00:00.0000000Z', tr)
