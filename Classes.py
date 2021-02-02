@@ -13,9 +13,15 @@ import csv
 
 class trader:
     #creates trader object with set bank value and portfolio value
-    def __init__(self, bank, portfolio):
+    def __init__(self, bank, portfolio, order):
         self.bank = bank
         self.portfolio = portfolio
+        #portfolio array: [BTC, ETH, LTC]
+        #array will contain number of shares that trader has of each coin
+        
+        self.order = order
+        #order array: [BTC, ETH, LTC]
+        #1: buy, 0: hold, -1: sell
         
 class market:
     def __init__(self, ticker, date, price):

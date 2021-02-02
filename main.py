@@ -66,10 +66,10 @@ def main():
         current_date = df.iloc[t,1]
         current_price = getCurrentPrice(current_date)
         
-        #test_trader
-        test = trader(400000, 0)
-        test_order = makeOrder(current_price, test)
-        getStockOrder(1, test_order, current_date, test)
+        #est_trader
+        test = trader(400000, [0,0,0], [0,0,0])
+        test.order[t-buffer] = makeOrder(current_price, test)
+        getStockOrder(1, current_date, test)
 
         #trader 1: only RSI LIONEL
         Hist[t,:]=np.array(df.iloc[t,5:9])
@@ -86,8 +86,8 @@ def main():
         Closing[t-buffer]=m.price
         #prediction
         #output will be average price in 5 minutes
-        predi =  Pred16(Hist[:,0],m16,t)      
-        PredHist[t-buffer]=predi
+        #predi =  Pred16(Hist[:,0],m16,t)      
+        #PredHist[t-buffer]=predi
         #get RSI from RSICalculator.py
 
         #trader: using RSI and market price make trading decision
