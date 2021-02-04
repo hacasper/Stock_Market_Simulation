@@ -16,14 +16,16 @@ def getCurrentPrice(date, coin):
         infoAtDate = btcData.iloc[date,:]
         btcPrice = infoAtDate.iloc[8]
         return btcPrice
-    if coin == 1:
+    elif coin == 1:
         infoAtDate = ethData.iloc[date,:]
         ethPrice = infoAtDate.iloc[8]
         return ethPrice
-    if coin == 2:
+    elif coin == 2:
         print("LITE data is coming...")
         return 100
-
+    else:
+        print("invalid coin key")
+        return 0
 def executeOrder (n, coin, date, trader): 
 
     #coin 0 : BTC
@@ -34,7 +36,7 @@ def executeOrder (n, coin, date, trader):
         stockPrice = infoAtDate.iloc[8]
         if trader.order[0] == 0:
             print("Trader is holding bitcoin")
-        if trader.order[0] == 1:
+        elif trader.order[0] == 1:
             print("Trader is buying bitcoin")
             saleprice = n * stockPrice
             trader.bank = trader.bank - saleprice
@@ -43,19 +45,19 @@ def executeOrder (n, coin, date, trader):
             print("Adding " + str(n) + " shares to portfolio")
             print("Trader has $" + str(trader.bank) + " in bank")
             print("Trader has " + str(n) + " shares in portfolio")
-        if trader.order[0]  == -1:
+        elif trader.order[0]  == -1:
             print("Trader is selling")
             saleprice = n * stockPrice
             trader.bank = trader.bank + saleprice
             trader.portfolio[0] = trader.portfolio[0] - n
             print("Adding $" + str(saleprice) + " to bank")
             print("Removing " + str(n) + " shares from portfolio")
-    if coin == 1:
+    elif coin == 1:
         infoAtDate = ethData.iloc[date,:]
         stockPrice = infoAtDate.iloc[8]
         if trader.order[1] == 0:
             print("Trader is holding ethereum")
-        if trader.order[1] == 1:
+        elif trader.order[1] == 1:
             print("Trader is buying ethereum")
             saleprice = n * stockPrice
             trader.bank = trader.bank - saleprice
@@ -64,14 +66,14 @@ def executeOrder (n, coin, date, trader):
             print("Adding " + str(n) + " shares to portfolio")
             print("Trader has $" + str(trader.bank) + " in bank")
             print("Trader has " + str(n) + " shares in portfolio")
-        if trader.order[1]  == -1:
+        elif trader.order[1]  == -1:
             print("Trader is selling ethereum")
             saleprice = n * stockPrice
             trader.bank = trader.bank + saleprice
             trader.portfolio[1] = trader.portfolio[1] - n
             print("Adding $" + str(saleprice) + " to bank")
             print("Removing " + str(n) + " shares from portfolio")
-    if coin == 2:
+    elif coin == 2:
         print("LITE data is coming...")
         
 
