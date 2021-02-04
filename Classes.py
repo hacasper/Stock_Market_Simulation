@@ -29,13 +29,13 @@ class market:
         self.date = date
         self.price = price
         #self.hist = [] 
-    
+        
     def market_description(self):
         return "price on " + self.date + "is $" + self.price
-
+        
     #def getMarketPrice(self):
     #add market file here
-            
+        
 class pred:
     def __init__(self,horizon):
         self.RSI=0
