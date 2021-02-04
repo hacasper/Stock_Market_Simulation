@@ -68,7 +68,7 @@ def executeOrder (n, coin, date, trader):
             print("Trader is selling ethereum")
             saleprice = n * stockPrice
             trader.bank = trader.bank + saleprice
-            trader.portfolio[1] = trader.portfolio[1] + n
+            trader.portfolio[1] = trader.portfolio[1] - n
             print("Adding $" + str(saleprice) + " to bank")
             print("Removing " + str(n) + " shares from portfolio")
     if coin == 2:
