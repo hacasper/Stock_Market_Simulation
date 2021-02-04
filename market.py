@@ -46,8 +46,8 @@ def executeOrder (n, coin, date, trader):
         if trader.order[0]  == -1:
             print("Trader is selling")
             saleprice = n * stockPrice
-            trader.bank = trader.bank - saleprice
-            trader.portfolio[0] = trader.portfolio[0] + n
+            trader.bank = trader.bank + saleprice
+            trader.portfolio[0] = trader.portfolio[0] - n
             print("Adding $" + str(saleprice) + " to bank")
             print("Removing " + str(n) + " shares from portfolio")
     if coin == 1:
