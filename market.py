@@ -50,6 +50,8 @@ def executeOrder (n, coin, date, trader):
             trader.portfolio[0] = trader.portfolio[0] - n
             print("Adding $" + str(saleprice) + " to bank")
             print("Removing " + str(n) + " shares from portfolio")
+            print("Trader has $" + str(trader.bank) + " in bank")
+            print("Trader has " + str(n) + " shares in portfolio")
     if coin == 1:
         infoAtDate = ethData.iloc[date,:]
         stockPrice = infoAtDate.iloc[8]
@@ -71,6 +73,8 @@ def executeOrder (n, coin, date, trader):
             trader.portfolio[1] = trader.portfolio[1] - n
             print("Adding $" + str(saleprice) + " to bank")
             print("Removing " + str(n) + " shares from portfolio")
+            print("Trader has $" + str(trader.bank) + " in bank")
+            print("Trader has " + str(n) + " shares in portfolio")
     if coin == 2:
         print("LITE data is coming...")
         
