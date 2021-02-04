@@ -12,13 +12,14 @@ import numpy as np
 
 
 def RSIblind(Hist,RSP,t,gain,loss,RSI):
-    if RSI == 0:
-        val=Hist[t-RSP:t,3]
+    Lookback=75
+    if RSI == 0: #There is a mistake somewhere here, the else statement is correct
+        val=Hist[Lookback-RSP:Lookback+1,3]
         var1=np.diff(val)
         dim=var1.size
         
-        gain = 0
-        loss = 0
+        gain = 0.000001
+        loss = 0.000001
         for i in range(0,dim-1):
             if var1[i]>0:
                 gain = gain + var1[i]
@@ -30,7 +31,7 @@ def RSIblind(Hist,RSP,t,gain,loss,RSI):
         rsi = 100-(100/(1+rs))
         return gain, loss, rsi 
     else:
-        val=Hist[t-RSP:t,3]
+        val=Hist[Lookback-RSP:Lookback+1,3]
         var1=np.diff(val)
         if var1[RSP-2] > 0:
             cg = var1[RSP-2]
@@ -44,16 +45,20 @@ def RSIblind(Hist,RSP,t,gain,loss,RSI):
         return gain, loss, rsi
         
     
-def StupidTrader(Hist, RSP,t,gain,loss,RSI,order):
+def StupidTrader(Hist, RSP,t,gain,loss,RSI,trader,coin):
+    Lookback=75
     gain, loss, rsindex = RSIblind(Hist,RSP,t,gain,loss,RSI)
     if rsindex > 70: #and order != 1:
-        order = 1
+        trader.order[coin] = 1
+        amount = np.floor(trader.bank/Hist[Lookback,3])
     #if RSI > 70 and order == 1:
         #order = 0
     if 30 < rsindex < 70:
-        order = 0
+        trader.order[coin] = 0
+        amount = 0
     if rsindex < 30: #and order != -1:
-        order = -1
+        trader.order[coin] = -1
+        amount = np.floor(trader.portfolio[coin]/Hist[Lookback,3])
     #if RSI < 30 and order == -1:
         #order = 0
-    return order, loss, gain, rsindex
+    return loss, gain, rsindex, amount

@@ -13,12 +13,12 @@ ethData = pd.read_csv("Data/Ether_Min_Jan20.csv")
 
 def getCurrentPrice(date, coin):
     if coin == 0:
-        infoAtDate = btcData.loc[btcData['time_period_start' == date]]
-        btcPrice = infoAtDate.iloc[0,8]
+        infoAtDate = btcData.iloc[date,:]
+        btcPrice = infoAtDate.iloc[8]
         return btcPrice
     if coin == 1:
-        infoAtDate = ethData.loc[ethData['time_period_start' == date]]
-        ethPrice = infoAtDate.iloc[0,8]
+        infoAtDate = ethData.iloc[date,:]
+        ethPrice = infoAtDate.iloc[8]
         return ethPrice
     if coin == 2:
         print("LITE data is coming...")
@@ -30,8 +30,8 @@ def executeOrder (n, coin, date, trader):
     #coin 1 : ETH
     #coin 2 : LTC
     if coin == 0:
-        infoAtDate = btcData.loc[btcData['time_period_start' == date]]
-        stockPrice = infoAtDate.iloc[0,8]
+        infoAtDate = btcData.iloc[date,:]
+        stockPrice = infoAtDate.iloc[8]
         if trader.order[0] == 0:
             print("Trader is holding bitcoin")
         if trader.order[0] == 1:
@@ -51,8 +51,8 @@ def executeOrder (n, coin, date, trader):
             print("Adding $" + str(saleprice) + " to bank")
             print("Removing " + str(n) + " shares from portfolio")
     if coin == 1:
-        infoAtDate = ethData.loc[ethData['time_period_start' == date]]
-        stockPrice = infoAtDate.iloc[0,8]
+        infoAtDate = ethData.iloc[date,:]
+        stockPrice = infoAtDate.iloc[8]
         if trader.order[1] == 0:
             print("Trader is holding ethereum")
         if trader.order[1] == 1:
@@ -67,12 +67,14 @@ def executeOrder (n, coin, date, trader):
         if trader.order[1]  == -1:
             print("Trader is selling ethereum")
             saleprice = n * stockPrice
-            trader.bank = trader.bank - saleprice
+            trader.bank = trader.bank + saleprice
             trader.portfolio[1] = trader.portfolio[1] + n
             print("Adding $" + str(saleprice) + " to bank")
             print("Removing " + str(n) + " shares from portfolio")
     if coin == 2:
         print("LITE data is coming...")
+        
+
     
 
 

@@ -10,7 +10,7 @@ from Classes import market, trader
 from trader import StupidTrader
 m16 = load_model("PredModels/model16")
 from preds import Pred16
-from market import getStockOrder, getCurrentPrice
+from market import executeOrder, getCurrentPrice
 from test_trader import makeOrder
 
 dfBTC = pd.read_csv ("Data/Bitcoin_Min_Jan20.csv")
@@ -18,7 +18,7 @@ df = pd.read_csv ("Data/Ether_Min_Jan20.csv")
 dim=df.shape[0]
 
 #pd.concat([dfBTC,dfETH]).drop_duplicates(subset = Pr['col2'], keep=False)
-
+#%%
 buffer=24*60*7 #1 Week data to use for models
 Lookback=75 #Amount of data that the Prediction Model Needs
 horizon=dim-buffer #amount of timestamps in the for loop
@@ -48,7 +48,7 @@ Hist = np.zeros([dim,4])
 PredHist = np.zeros([horizon,1])
 Hist[0:buffer-1,:] = np.array(df.iloc[0:buffer-1,5:9])
 m=market('ETH',df.iloc[buffer-1,1],df.iloc[buffer-1,5])
-Orders = np.zeros([horizon,1])
+
 
 #Trader Variables
 RSP = 15
@@ -58,23 +58,27 @@ RSIndex = np.zeros([horizon,1]) #current RSI
 order = np.zeros([horizon,1]) #current order state
 
 
+
+
+#%%
+RSI_Trader = trader(400000, [0,0,0], [0,0,0]) #Define Outside to keep data
 def main():
-    for t in range (buffer,buffer + 2000):
+    for t in range (buffer,buffer + 10000):
         #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
 
 
         current_date = df.iloc[t,1]
-        current_price = getCurrentPrice(current_date)
+        current_price = getCurrentPrice(t,1)
         
         #est_trader
-        test = trader(400000, [0,0,0], [0,0,0])
-        test.order[t-buffer] = makeOrder(current_price, test)
-        getStockOrder(1, current_date, test)
-
+        # test = trader(400000, [0,0,0], [0,0,0])
+        # test.order[t-buffer] = makeOrder(current_price, test)
+        # getStockOrder(1,1, current_date, test)
+        
         #trader 1: only RSI LIONEL
         Hist[t,:]=np.array(df.iloc[t,5:9])
-        order[t-buffer], l[t-buffer], g[t-buffer], RSIndex[t-buffer] = StupidTrader(Hist, RSP,t,g[t-buffer-1],l[t-buffer-1],RSIndex[t-buffer-1],order[t-buffer-1])
-        
+        l[t-buffer], g[t-buffer], RSIndex[t-buffer], qty = StupidTrader(Hist[t-Lookback:t+1,:], RSP,t,g[t-buffer-1],l[t-buffer-1],RSIndex[t-buffer-1],RSI_Trader,1)
+        executeOrder(qty, 1, t, RSI_Trader)
         #Aria's trader
 
         #Define your own trader
@@ -98,10 +102,10 @@ def main():
             print("market price for " + m.ticker + " on " + m.date + " is " + str(m.price))
             
         
-
+        order[t-buffer]=RSI_Trader.order[1]
 if __name__ == "__main__":
     main()
-
+#%%
 # plt.plot(Mins[0:10000],PredHist[0:10000])
 # plt.plot(Mins[0:10000],Hist[buffer:buffer+10000,0])
 # plt.show()
