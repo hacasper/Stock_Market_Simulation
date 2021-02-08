@@ -104,16 +104,16 @@ headers = {
 
 
 # Get Litecoin Minute data for January 2018
-respLTCm = requests.get('https://rest.coinapi.io/v1/ohlcv/COINBASE_SPOT_LTC_USD/history?period_id=1MIN&time_start=2020-01-01&time_end=2020-02-01&limit=100000&include_empty_items=1',headers=headers)
+# respLTCm = requests.get('https://rest.coinapi.io/v1/ohlcv/COINBASE_SPOT_LTC_USD/history?period_id=1MIN&time_start=2020-01-01&time_end=2020-02-01&limit=100000&include_empty_items=1',headers=headers)
 
-data_LTCm = pd.read_json(respLTCm.text)
-data_LTCm.to_csv('Lite_Min_Jan20.csv')
+# data_LTCm = pd.read_json(respLTCm.text)
+# data_LTCm.to_csv('Lite_Min_Jan20.csv')
 
 # Get Ether hourly data 2018-2021
-#respETHh = requests.get('https://rest.coinapi.io/v1/ohlcv/COINBASE_SPOT_ETH_USD/history?period_id=1HRS&time_start=2018-01-01&time_end=2021-01-01&limit=100000&include_empty_items=1',headers=headers)
+respETHh = requests.get('https://rest.coinapi.io/v1/ohlcv/COINBASE_SPOT_ETH_USD/history?period_id=1HRS&time_start=2018-01-01&time_end=2021-01-01&limit=100000&include_empty_items=1',headers=headers)
 
-# data_ETHh = pd.read_json(respETHh.text)
-# data_ETHh.to_csv('Ether_Hour_1820.csv')
+data_ETHh = pd.read_json(respETHh.text)
+data_ETHh.to_csv('Ether_Hour_1820.csv')
 
 # Get Litecoin hourly data 2018-2021
 #respLTCh = requests.get('https://rest.coinapi.io/v1/ohlcv/COINBASE_SPOT_LTC_USD/history?period_id=1HRS&time_start=2018-01-01&time_end=2021-01-01&limit=100000&include_empty_items=1',headers=headers)

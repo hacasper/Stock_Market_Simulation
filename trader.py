@@ -49,16 +49,26 @@ def StupidTrader(Hist, RSP,t,gain,loss,RSI,trader,coin):
     Lookback=75
     gain, loss, rsindex = RSIblind(Hist,RSP,t,gain,loss,RSI)
     if rsindex > 70: #and order != 1:
-        trader.order[coin] = 1
-        amount = np.floor(trader.bank/Hist[Lookback,3])
-    #if RSI > 70 and order == 1:
-        #order = 0
-    if 30 < rsindex < 70:
-        trader.order[coin] = 0
-        amount = 0
-    if rsindex < 30: #and order != -1:
         trader.order[coin] = -1
         amount = np.floor(trader.portfolio[coin]/Hist[Lookback,3])
+    #if RSI > 70 and order == 1:
+        #order = 0
+    elif 30 < rsindex < 70:
+        trader.order[coin] = 0
+        amount = 0
+    elif rsindex < 30: #and order != -1:
+        trader.order[coin] = 1
+        amount = np.floor(trader.bank[coin]/Hist[Lookback,3])
     #if RSI < 30 and order == -1:
         #order = 0
     return loss, gain, rsindex, amount
+
+def SmartTrader(Hist, RSP, t, gain, loss, RSI, trader, coin):
+    Lookback=75
+    
+    
+    
+    return Preds, amount
+    
+    
+    

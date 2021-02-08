@@ -27,13 +27,16 @@ def MiMaScaler(data, mi, ma, i):
 #model 18: 60, 50, 10(5)
 #model 19: 75, 60, 10(5)
 
+#Final Models
+#Model 20: ETHER, 75 Lookback, 60 nodes, Outlook = Av in 5min, 
+
 
 t1=24*60*7
 
-df = pd.read_csv ('./Data/Ether_Min_Jan20.csv')
+df = pd.read_csv ('../Data/Ether_Min_Jan20.csv')
 raw = df.iloc[0:t1,np.array([5,6])]
 raw2 = df.iloc[0:2*t1,np.array([5,6])]
-
+size=raw2.shape[0]
   
 
 
@@ -47,6 +50,11 @@ Outlook = 1 #Amount of Outputs
 
 scaled=raw
 scaled2=raw2
+
+dif=np.zeros(size-1)
+#Differences Trial:
+for i in range(0,size-1):
+    dif[i]=raw2.iloc[i+1,1]-raw2.iloc[i,1]
 
 #Make the range larger so all values are around 0.3-0.7
 mi = min(raw2.iloc[0:int(t1/2),0])/4
@@ -103,14 +111,14 @@ regressor.add(Dense(units = Outlook)) #Amount of Outputs
 
 regressor.compile(optimizer = 'adam', loss = 'mean_squared_error')
 
-regressor.fit(X_train, y_train, epochs = 50, batch_size = 50)
+regressor.fit(X_train, y_train, epochs = 75, batch_size = 50)
 
 pred = pd.DataFrame(regressor.predict(X_test))
 
 t=np.array(list(range(0,2*t1)))
 
 
-regressor.save('model19')
+regressor.save('model20')
 
 
 plt.plot(t[Lookback:],scaled2.iloc[Lookback:,0])
