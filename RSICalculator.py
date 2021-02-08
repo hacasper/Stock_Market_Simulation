@@ -7,10 +7,11 @@ from datetime import timedelta
 
 from Classes import market
 
+
 dfBTC = pd.read_csv("Data/Bitcoin_Day_1820.csv")
 dfETH = pd.read_csv("Data/Ether_Day_1820.csv")
-rsp1 = 14
 
+rsp1 = 14
 delta = timedelta(days=rsp1)
 
 # will be today = dt.date.today()
@@ -46,3 +47,16 @@ def rsi_t(gain_prev,loss_prev,rsi_period,prices):
     else:
         rsi = 100-((100)/(1+(((gain_prev*(rsi_period-1))+0)/((1*loss_prev*(rsi_period-1)+runningdiff)))))
     return rsi, runningdiff
+
+
+import cgitb
+import cgi
+cgitb.enable()
+form = cgi.FieldStorage()
+
+coin = form.getvalue('coindropdown')
+coin = (form['coindropdown'].value)
+header = "Content-Type: text/html\n\n"
+output = html.format(result = gain)
+print (header)
+print (output)
