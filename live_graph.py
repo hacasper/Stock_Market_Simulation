@@ -1,7 +1,8 @@
-#%%
-
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib
+from matplotlib import pyplot as plt
+matplotlib.use('TKAgg')
+
 
 m = 100
 n = 100

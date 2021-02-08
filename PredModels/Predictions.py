@@ -39,30 +39,32 @@ raw2 = df.iloc[0:2*t1,np.array([5,6])]
 size=raw2.shape[0]
   
 
-
-sc_cl = MinMaxScaler(feature_range = (0, 1))
-sc_classic = sc_cl.fit_transform(raw2)
-
-
 Lookback=75 #Amount of Inputs
 Window = 10 #Amount of Datapoints to Calc run Mean (EVEN)
 Outlook = 1 #Amount of Outputs
 
-scaled=raw
-scaled2=raw2
+#Without Differences: Use scaled
+scaled=raw2
 
+#With Differences: Use dif
 dif=np.zeros(size-1)
+
+
 #Differences Trial:
 for i in range(0,size-1):
     dif[i]=raw2.iloc[i+1,1]-raw2.iloc[i,1]
 
-#Make the range larger so all values are around 0.3-0.7
+#Make the range larger so all values are around 0.3-0.7 for scaled approach
 mi = min(raw2.iloc[0:int(t1/2),0])/4
 ma = max(raw2.iloc[0:int(t1/2),0])*2
 
-scaled = (scaled.iloc[:,:]-mi) / (ma - mi)
-scaled2 = (scaled2.iloc[:,:]-mi) / (ma - mi)
+#Double the differences for better compatibility with extreme values
+mi2 = min(dif)*2.5
+ma2 = max(dif)*2.5
 
+scaled = (scaled.iloc[:,:]-mi) / (ma - mi)
+
+difscaled = (dif-mi2) / (ma2-mi2)
 
 sfac = np.full([2*t1,2],[mi,ma])
 # for i in range (int(t1/2), 2*t1):
