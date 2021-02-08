@@ -73,7 +73,7 @@ def JackTrader(Hist, RSP,t,gain,loss,RSI,trader,coin):
     if rsindex > sellrisk: #and order != 1:
         trader.order[coin] = -1
         amount = sellamount*trader.portfolio[coin]
-    #if RSI > 70 and order == 1:
+    #if RSI > sellrisk and order == 1:
         #order = 0
     elif buyrisk < rsindex < sellrisk:
         trader.order[coin] = 0
@@ -81,7 +81,7 @@ def JackTrader(Hist, RSP,t,gain,loss,RSI,trader,coin):
     elif rsindex < buyrisk: #and order != -1:
         trader.order[coin] = 1
         amount = buyamount*trader.bank[coin]
-    #if RSI < 30 and order == -1:
+    #if RSI < buyrisk and order == -1:
         #order = 0
     return loss, gain, rsindex, amount
 

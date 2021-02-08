@@ -64,24 +64,23 @@ order = np.zeros([horizon,1]) #current order state
 
 #%%
 RSI_Trader = trader(400000, [0,0,0], [0,0,0]) #Define Outside to keep data
-
 def main():
     for t in range (buffer,buffer + 10000):
         #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
 
+
+        current_date = df.iloc[t,1]
+        current_price = getCurrentPrice(t,1)
+        
+        #est_trader
+        # test = trader(400000, [0,0,0], [0,0,0])
+        # test.order[t-buffer] = makeOrder(current_price, test)
+        # getStockOrder(1,1, current_date, test)
+        
         #trader 1: only RSI LIONEL
         Hist[t,:]=np.array(df.iloc[t,5:9])
         l[t-buffer], g[t-buffer], RSIndex[t-buffer], qty = StupidTrader(Hist[t-Lookback:t+1,:], RSP,t,g[t-buffer-1],l[t-buffer-1],RSIndex[t-buffer-1],RSI_Trader,1)
         executeOrder(qty, 1, t, RSI_Trader)
-        #trader 2: RSI & Pred
-        # ,qty = SmartTrader(Hist[t-Lookback:t+1,:], )
-        
-        
-        #predi =  Pred16(Hist[:,0],m16,t)
-        
-        
-        
-        
         #Aria's trader
 
         #Define your own trader
