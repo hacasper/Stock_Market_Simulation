@@ -64,7 +64,6 @@ def StupidTrader(Hist, RSP,t,gain,loss,RSI,trader,coin):
     return loss, gain, rsindex, amount
 
 def JackTrader(Hist, RSP,t,gain,loss,RSI,trader,coin):
-    Lookback = 75
     sellrisk = 70
     buyrisk = 30
     sellamount = 0.65
