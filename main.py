@@ -74,7 +74,7 @@ def main():
         l[t-buffer], g[t-buffer], RSIndex[t-buffer], qty = StupidTrader(Hist[t-Lookback:t+1,:], RSP,t,g[t-buffer-1],l[t-buffer-1],RSIndex[t-buffer-1],RSI_Trader,1)
         executeOrder(qty, 1, t, RSI_Trader)
         #trader 2: RSI & Pred
-         ,qty = SmartTrader(Hist[t-Lookback:t+1,:], )
+        # ,qty = SmartTrader(Hist[t-Lookback:t+1,:], )
         
         
         #predi =  Pred16(Hist[:,0],m16,t)

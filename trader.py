@@ -50,7 +50,7 @@ def StupidTrader(Hist, RSP,t,gain,loss,RSI,trader,coin):
     gain, loss, rsindex = RSIblind(Hist,RSP,t,gain,loss,RSI)
     if rsindex > 70: #and order != 1:
         trader.order[coin] = -1
-        amount = np.floor(trader.portfolio[coin]/Hist[Lookback,3])
+        amount = trader.portfolio[coin]
     #if RSI > 70 and order == 1:
         #order = 0
     elif 30 < rsindex < 70:
