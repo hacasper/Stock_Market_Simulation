@@ -50,7 +50,7 @@ def StupidTrader(Hist, RSP,t,gain,loss,RSI,trader,coin):
     gain, loss, rsindex = RSIblind(Hist,RSP,t,gain,loss,RSI)
     if rsindex > 70: #and order != 1:
         trader.order[coin] = -1
-        amount = trader.portfolio[coin]
+        amount = np.floor(trader.portfolio[coin]/Hist[Lookback,3])
     #if RSI > 70 and order == 1:
         #order = 0
     elif 30 < rsindex < 70:
@@ -58,7 +58,29 @@ def StupidTrader(Hist, RSP,t,gain,loss,RSI,trader,coin):
         amount = 0
     elif rsindex < 30: #and order != -1:
         trader.order[coin] = 1
-        amount = np.floor(trader.bank[coin]/Hist[Lookback,3])
+        amount = trader.bank[coin]
+    #if RSI < 30 and order == -1:
+        #order = 0
+    return loss, gain, rsindex, amount
+
+def JackTrader(Hist, RSP,t,gain,loss,RSI,trader,coin):
+    Lookback = 75
+    sellrisk = 70
+    buyrisk = 30
+    sellamount = 0.65
+    buyamount = 1
+    gain, loss, rsindex = RSIblind(Hist,RSP,t,gain,loss,RSI)
+    if rsindex > sellrisk: #and order != 1:
+        trader.order[coin] = -1
+        amount = sellamount*trader.portfolio[coin]
+    #if RSI > 70 and order == 1:
+        #order = 0
+    elif buyrisk < rsindex < sellrisk:
+        trader.order[coin] = 0
+        amount = 0
+    elif rsindex < buyrisk: #and order != -1:
+        trader.order[coin] = 1
+        amount = buyamount*trader.bank[coin]
     #if RSI < 30 and order == -1:
         #order = 0
     return loss, gain, rsindex, amount
