@@ -15,48 +15,28 @@ from keras.layers import LSTM
 from keras.layers import Dropout
 from sklearn.preprocessing import MinMaxScaler
 
-
-
-def MiMaScaler(data, mi, ma, i):
-    sca = (data.iloc[i:,:] - mi)/(ma - mi)
-    return sca.iloc[:,:]
-
-
-#Good models: 14, (15?), 16, 17
-
-#model 18: 60, 50, 10(5)
-#model 19: 75, 60, 10(5)
-
 #Final Models
-#Model 20: ETHER, 75 Lookback, 60 nodes, Outlook = Av in 5min, with differences
-
+#Model 20: ETHER, 75 Lookback, 60 nodes, Outlook = Av in 5min, with trend correction
 
 t1=24*60*7
-
-df = pd.read_csv ('../Data/Ether_Min_Jan20.csv')
-raw = df.iloc[0:t1,np.array([5,6])]
-raw2 = df.iloc[0:2*t1,np.array([5,6])]
-size=raw2.shape[0]
-  
-
 Lookback=75 #Amount of Inputs
 Window = 10 #Amount of Datapoints to Calc run Mean (EVEN)
 Outlook = 1 #Amount of Outputs
 
+df = pd.read_csv ('../Data/Ether_Min_Jan20.csv')
+raw = df.iloc[0:2*t1,np.array([5,6])]
+size=raw.shape[0]
+  
 #Without Differences: Use scaled
-scaled=raw2
-
-#With Differences: Use dif
-dif=np.zeros(size-1)
-
+scaled=raw
 
 #Differences Trial:
-for i in range(0,size-1):
-    dif[i]=raw2.iloc[i+1,1]-raw2.iloc[i,1]
+# for i in range(0,size-1):
+#     dif[i]=raw.iloc[i+1,1]-raw.iloc[i,1]
 
 #Make the range larger so all values are around 0.3-0.7 for scaled approach
-mi = min(raw2.iloc[0:int(t1/2),1])/4
-ma = max(raw2.iloc[0:int(t1/2),1])*2
+mi = min(raw.iloc[0:int(t1/2),1])/4
+ma = max(raw.iloc[0:int(t1/2),1])*2
 
 #Double the differences for better compatibility with extreme values
 mi2 = min(dif) *1.2
@@ -86,19 +66,19 @@ X_train2 = []
 X_test2 = []
 y_train2 = []
 for j in range (Lookback, t1-Window-Window):
-    # Means = sum(scaled.iloc[j+int(Window/2):j+int(Window/2)+Window,0])/Window
-    # X_train.append(scaled.iloc[j-Lookback:j, 0])
-    # X_test.append(scaled.iloc[t1-Lookback+j:t1+j,0])
-    # y_train.append(Means)
-    Means2 = sum(difscaled.iloc[j+int(Window/2):j+int(Window/2)+Window,0])/Window
-    X_train2.append(difscaled.iloc[j-Lookback:j,0])
-    X_test2.append(difscaled.iloc[t1-Lookback+j:t1+j,0])
-    y_train2.append(Means2)
+    Means = sum(scaled.iloc[j+int(Window/2):j+int(Window/2)+Window,0])/Window
+    X_train.append(scaled.iloc[j-Lookback:j, 0])
+    X_test.append(scaled.iloc[t1-Lookback+j:t1+j,0])
+    y_train.append(Means)
+    # Means2 = sum(difscaled.iloc[j+int(Window/2):j+int(Window/2)+Window,0])/Window
+    # X_train2.append(difscaled.iloc[j-Lookback:j,0])
+    # X_test2.append(difscaled.iloc[t1-Lookback+j:t1+j,0])
+    # y_train2.append(Means2)
     
     
-X_train=X_train2
-X_test=X_test2
-y_train=y_train2
+# X_train=X_train2
+# X_test=X_test2
+# y_train=y_train2
 
 
 X_train, y_train  = np.array(X_train), np.array(y_train)
@@ -155,3 +135,9 @@ regressor.save('model20')
 # # plt.plot(t[t1+30:t1+32],pred.iloc[30,:]) 
 # # plt.plot(t[t1+40:t1+42],pred.iloc[40,:]) 
 # plt.show()
+
+
+plt.plot(t[t1:2*t1-Window-Window-Lookback],y_train)
+plt.plot(t[t1:2*t1-Window-Window-Lookback],pred.iloc[:,0])
+plt.legend('1','2')
+plt.show()

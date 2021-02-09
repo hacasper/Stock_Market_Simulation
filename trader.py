@@ -58,7 +58,7 @@ def StupidTrader(Hist, RSP,t,gain,loss,RSI,trader,coin):
         amount = 0
     elif rsindex < 30: #and order != -1:
         trader.order[coin] = 1
-        amount = trader.bank[coin]
+        amount = trader.bank
     #if RSI < 30 and order == -1:
         #order = 0
     return loss, gain, rsindex, amount
