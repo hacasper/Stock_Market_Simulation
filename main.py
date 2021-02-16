@@ -60,9 +60,6 @@ l=np.zeros([horizon,1]) #current loss
 RSIndex = np.zeros([horizon,1]) #current RSI
 order = np.zeros([horizon,1]) #current order state
 
-
-
-
 #%%
 transactions = np.array["time", "Trader", "portfolio", "bank", "trade"]
 RSI_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0]) #Define Outside to keep data

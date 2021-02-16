@@ -58,11 +58,8 @@ def StupidTrader(Hist, RSP,t,gain,loss,RSI,trader,coin):
         amount = 0
     elif rsindex < 30: #and order != -1:
         trader.order[coin] = 1
-<<<<<<< HEAD
-        amount = trader.bank
-=======
+
         amount = np.floor(trader.bank/Hist[Lookback,3])
->>>>>>> 1ec3544163ca11590e6eb0ae181d91471ba72a76
     #if RSI < 30 and order == -1:
         #order = 0
     return loss, gain, rsindex, amount
