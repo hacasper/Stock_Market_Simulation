@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from tensorflow.keras.models import load_model
 
 from Classes import market, trader
-from trader import StupidTrader
+from trader import StupidTrader, TieredTrader
 m16 = load_model("PredModels/model16")
 from preds import Pred16
 from market import executeOrder, getCurrentPrice
@@ -63,6 +63,7 @@ order = np.zeros([horizon,1]) #current order state
 #%%
 transactions = np.array(["time", "Trader", "portfolio", "bank", "trade"])
 RSI_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0]) #Define Outside to keep data
+Tiered_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 def main():
     for t in range (buffer,buffer + 10000):
         #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
@@ -84,7 +85,9 @@ def main():
         transactionrow = [t, "RSI_Trader", RSI_Trader.portfolio, RSI_Trader.bank, RSI_Trader.order]
         RSI_Trader.transactions = np.vstack(transactions, transactionrow)
         #Aria's trader
-
+        Hist[t,:]=np.array(df.iloc[t,5:9])
+        qty = TieredTrader(Hist[t-Lookback:t+1,:],t,RSIndex[t-buffer],Tiered_Trader,1)
+        executeOrder(qty, 1, t, Tiered_Trader)
         #Define your own trader
 
         #getStockOrder(n, order, date, trader)
@@ -110,6 +113,7 @@ def main():
 if __name__ == "__main__":
     main()
     pprint(RSI_Trader.transactions)
+    pprint(Tiered_Trader.transactions)
 #%%
 # plt.plot(Mins[0:10000],PredHist[0:10000])
 # plt.plot(Mins[0:10000],Hist[buffer:buffer+10000,0])
