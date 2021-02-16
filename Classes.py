@@ -13,7 +13,7 @@ import csv
 
 class trader:
     #creates trader object with set bank value and portfolio value
-    def __init__(self, bank, portfolio, order):
+    def __init__(self, bank, portfolio, order, transactions):
         self.bank = bank
         self.portfolio = portfolio
         #portfolio array: [BTC, ETH, LTC]
@@ -23,6 +23,9 @@ class trader:
         #order array: [BTC, ETH, LTC]
         #1: buy, 0: hold, -1: sell
         
+        self.transactions = transactions
+        #transaction history to be exported as csv to analyze
+        #[time, portfolio, bank, trade]
 class market:
     def __init__(self, ticker, date, price):
         self.ticker = ticker

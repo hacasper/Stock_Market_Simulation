@@ -3,6 +3,7 @@
 import pandas as pd
 import datetime as dt
 import math
+import pprint
 import csv  
 import numpy as np
 import matplotlib.pyplot as plt
@@ -63,7 +64,8 @@ order = np.zeros([horizon,1]) #current order state
 
 
 #%%
-RSI_Trader = trader(400000, [0,0,0], [0,0,0]) #Define Outside to keep data
+transactions = np.array["time", "Trader", "portfolio", "bank", "trade"]
+RSI_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0]) #Define Outside to keep data
 def main():
     for t in range (buffer,buffer + 10000):
         #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
@@ -81,6 +83,9 @@ def main():
         Hist[t,:]=np.array(df.iloc[t,5:9])
         l[t-buffer], g[t-buffer], RSIndex[t-buffer], qty = StupidTrader(Hist[t-Lookback:t+1,:], RSP,t,g[t-buffer-1],l[t-buffer-1],RSIndex[t-buffer-1],RSI_Trader,1)
         executeOrder(qty, 1, t, RSI_Trader)
+
+        transactionrow = [t, "RSI_Trader", RSI_Trader.portfolio, RSI_Trader.bank, RSI_Trader.order]
+        RSI_Trader.transactions = np.vstack(transactions, transactionrow)
         #Aria's trader
 
         #Define your own trader
@@ -107,6 +112,7 @@ def main():
         order[t-buffer]=RSI_Trader.order[1]
 if __name__ == "__main__":
     main()
+    pprint(RSI_Trader.transactions)
 #%%
 # plt.plot(Mins[0:10000],PredHist[0:10000])
 # plt.plot(Mins[0:10000],Hist[buffer:buffer+10000,0])
