@@ -82,7 +82,7 @@ def main():
         executeOrder(qty, 1, t, RSI_Trader)
 
         transactionrow = [t, "RSI_Trader", RSI_Trader.portfolio, RSI_Trader.bank, RSI_Trader.order]
-        RSI_Trader.transactions = np.vstack(transactions, transactionrow)
+        RSI_Trader.transactions = np.vstack((transactions, transactionrow))
         #Aria's trader
 
         #Define your own trader
