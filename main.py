@@ -61,7 +61,7 @@ RSIndex = np.zeros([horizon,1]) #current RSI
 order = np.zeros([horizon,1]) #current order state
 
 #%%
-transactions = np.array(["time", "Trader", "portfolio", "bank", "trade"])
+transactions = pd.DataFrame(["time", "Trader", "portfolio", "bank", "trade"])
 RSI_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0]) #Define Outside to keep data
 def main():
     for t in range (buffer,buffer + 10000):
@@ -82,7 +82,8 @@ def main():
         executeOrder(qty, 1, t, RSI_Trader)
 
         transactionrow = [t, "RSI_Trader", RSI_Trader.portfolio, RSI_Trader.bank, RSI_Trader.order]
-        RSI_Trader.transactions = np.vstack((transactions, transactionrow))
+        RSI_Trader.transactions = pd.DataFrame.append(transactions, transactionrow)
+
         #Aria's trader
 
         #Define your own trader
@@ -109,7 +110,8 @@ def main():
         order[t-buffer]=RSI_Trader.order[1]
 if __name__ == "__main__":
     main()
-    pprint(RSI_Trader.transactions)
+    print(RSI_Trader.transactions)
+    
 #%%
 # plt.plot(Mins[0:10000],PredHist[0:10000])
 # plt.plot(Mins[0:10000],Hist[buffer:buffer+10000,0])
