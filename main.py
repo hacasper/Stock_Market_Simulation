@@ -62,7 +62,8 @@ order = np.zeros([horizon,1]) #current order state
 
 #%%
 RSI_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0]) #Define Outside to keep data
-RSI_Trader.transactions = pd.DataFrame(columns=["time", "Trader", "portfolio", "bank", "trade"])
+cols = ["time", "Trader", "portfolio", "bank", "trade"]
+RSI_Trader.transactions = pd.DataFrame(columns=cols)
 def main():
     for t in range (buffer,buffer + 10000):
         #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
@@ -81,9 +82,10 @@ def main():
         l[t-buffer], g[t-buffer], RSIndex[t-buffer], qty = StupidTrader(Hist[t-Lookback:t+1,:], RSP,t,g[t-buffer-1],l[t-buffer-1],RSIndex[t-buffer-1],RSI_Trader,1)
         executeOrder(qty, 1, t, RSI_Trader)
 
-        for i in range(0, RSI_Trader.transactions.shape[1]):
-            transactionrow = pd.DataFrame([[t], ["RSI_Trader"], [RSI_Trader.portfolio], [RSI_Trader.bank], [RSI_Trader.order]])
-            RSI_Trader.transactions = RSI_Trader.transactions.append(transactionrow)
+        transactionrow = [t, "RSI_Trader", RSI_Trader.portfolio, RSI_Trader.bank, RSI_Trader.order]
+        transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
+
+        RSI_Trader.transactions = pd.concat([RSI_Trader.transactions, transactionrow_df])
 
         #Aria's trader
 
