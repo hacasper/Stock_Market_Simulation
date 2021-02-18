@@ -62,7 +62,7 @@ order = np.zeros([horizon,1]) #current order state
 
 #%%
 RSI_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0]) #Define Outside to keep data
-cols = ["time", "Trader", "portfolio", "bank", "trade"]
+cols = ["time", "Trader", "BTC", "ETH", "LTC", "bank", "bit_trade", "eth_trade", "lite_trade"]
 RSI_Trader.transactions = pd.DataFrame(columns=cols)
 def main():
     for t in range (buffer,buffer + 10000):
@@ -82,7 +82,7 @@ def main():
         l[t-buffer], g[t-buffer], RSIndex[t-buffer], qty = StupidTrader(Hist[t-Lookback:t+1,:], RSP,t,g[t-buffer-1],l[t-buffer-1],RSIndex[t-buffer-1],RSI_Trader,1)
         executeOrder(qty, 1, t, RSI_Trader)
 
-        transactionrow = [t, "RSI_Trader", RSI_Trader.portfolio, RSI_Trader.bank, RSI_Trader.order]
+        transactionrow = [t, "RSI_Trader", RSI_Trader.portfolio[0], RSI_Trader.portfolio[1], RSI_Trader.portfolio[2], RSI_Trader.bank, RSI_Trader.order[0], RSI_Trader.order[1], RSI_Trader.order[2]]
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
 
         RSI_Trader.transactions = pd.concat([RSI_Trader.transactions, transactionrow_df])
