@@ -60,8 +60,48 @@ def StupidTrader(Hist,RSP,gain,loss,RSI,trader):
             amount[j] = 0
         elif rsindex[j] < 30: #and order != -1:
             trader.order[j] = 1
-            amount[j] = np.floor(trader.bank/Hist[-1,j]/2)
-    return loss, gain, rsindex, amount
+            amount[j] = np.floor(trader.bank/Hist[-1,j]/3)
+    return loss,gain,rsindex,amount
+    
+def TieredTrader(Hist,t,rsindex,trader,coin):
+    Lookback=75
+    if 100 > rsindex >= 90: #and order != 1:
+        trader.order[coin] = -1
+        amount = trader.portfolio[coin]
+    #if RSI > 70 and order == 1:
+        #order = 0
+    elif 90 > rsindex >= 80: #and order != -1:
+        trader.order[coin] = -1
+        amount = (2/3)*trader.portfolio[coin]
+    elif 80 > rsindex >= 70: #and order != -1:
+        trader.order[coin] = -1
+        amount = (1/2)*trader.portfolio[coin]
+    elif 70 > rsindex >= 60: #and order != -1:
+        trader.order[coin] = -1
+        amount = (1/4)*trader.portfolio[coin]
+    elif 60 > rsindex >= 50: #and order != 1:
+        trader.order[coin] = 0
+        amount = 0
+    elif 50 > rsindex >= 40: #and order != 1:
+        trader.order[coin] = 0
+        amount = 0
+    elif 40 > rsindex >= 30: #and order != 1:
+        trader.order[coin] = 1
+        amount = (1/4)*trader.bank/Hist[Lookback,3]
+    elif 30 > rsindex >= 20: #and order != 1:
+        trader.order[coin] = 1
+        amount = (1/2)*trader.bank/Hist[Lookback,3]
+    elif 20 > rsindex >= 10: #and order != 1:
+        trader.order[coin] = 1
+        amount = (2/3)*trader.bank/Hist[Lookback,3]
+    elif 10 > rsindex >= 0: #and order != 1:
+        trader.order[coin] = 1
+        amount = trader.bank/Hist[Lookback,3]
+    #if RSI < 30 and order == -1:
+        #order = 0
+    return amount        
+    
+
 
 def JackTrader(Hist, RSP,t,gain,loss,RSI,trader,coin):
     Lookback = int(60)

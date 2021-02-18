@@ -24,8 +24,7 @@ class trader:
         #1: buy, 0: hold, -1: sell
         
         self.transactions = transactions
-        #transaction history to be exported as csv to analyze
-        #[time, portfolio, bank, trade]
+        
 class market:
     def __init__(self, ticker, date, price):
         self.ticker = ticker

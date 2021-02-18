@@ -70,41 +70,38 @@ l=np.zeros([horizon,3]) #current loss
 RSIndex = np.zeros([horizon,3]) #current RSI
 order = np.zeros([horizon,3,3]) #current order state
 
-
-
-
 #%%
-#transactions = np.array["time", "Trader", "portfolio", "bank", "trade"]
 RSI_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0]) #Define Outside to keep data
 Adv_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
+cols = ["time", "Trader", "portfolio", "bank", "trade"]
+RSI_Trader.transactions = pd.DataFrame(columns=cols)
+Adv_Trader.transactions = pd.DataFrame(columns=cols)
 
 def main():
     for t in range (buffer,buffer + 50):
         #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
-        current_date = df.iloc[t,1]
-        current_price = getCurrentPrice(t,1)
-        
-        #est_trader
-        # test = trader(400000, [0,0,0], [0,0,0])g
-        # test.order[t-buffer] = makeOrder(current_price, test)
-        # getStockOrder(1,1, current_date, test)
-        
+             
         #History Arrays
         Hist[t,0]=np.array(dfBTC.iloc[t,8])
         Hist[t,1]=np.array(dfETH.iloc[t,8])
         Hist[t,2]=np.array(dfLTC.iloc[t,8])
         #trader 1: only RSI LIONEL
         l[t-buffer,:], g[t-buffer,:], RSIndex[t-buffer,:], qty = StupidTrader(Hist[t-Lookback:t+1,:], RSP,g[t-buffer-1,:],l[t-buffer-1,:],RSIndex[t-buffer-1,:],RSI_Trader)
-        # executeOrder(qty, 1, t, RSI_Trader)
+        for i in range (0,3):
+            executeOrder(qty[i], i, t, RSI_Trader)
+        transactionrow = [t, "RSI_Trader", RSI_Trader.portfolio, RSI_Trader.bank, RSI_Trader.order]
+        transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
+        RSI_Trader.transactions = pd.concat([RSI_Trader.transactions, transactionrow_df])
         # transactionrow = [t, "RSI_Trader", RSI_Trader.portfolio, RSI_Trader.bank, RSI_Trader.order]
         # RSI_Trader.transactions = np.vstack(transactions, transactionrow)
         
         #trader 2: Adv. Trader (Lionel)
         Preds, qty = SmartTrader(Hist[t-Lookback:t+1,:], RSIndex[t-buffer,:], Adv_Trader)
+        for i in range (0,3):
+            executeOrder(qty[i], i, t, RSI_Trader)
         PredHist[t-buffer,:]=Preds
+        
 
-        
-        
         #Aria's trader
         
         
@@ -132,7 +129,8 @@ def main():
         #order[t-buffer]=RSI_Trader.order[1]
 if __name__ == "__main__":
     main()
-    #pprint(RSI_Trader.transactions)
+    print(RSI_Trader.transactions)
+    
 #%%
 # plt.plot(Mins[0:10000],PredHist[0:10000])
 # plt.plot(Mins[0:10000],Hist[buffer:buffer+10000,0])
