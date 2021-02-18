@@ -14,7 +14,7 @@ from keras.layers import Dense
 from keras.layers import LSTM
 from keras.layers import Dropout
 from sklearn.preprocessing import MinMaxScaler
-
+from tensorflow.keras.models import load_model
 #Final Models
 #Model 20: ETHER, 60 Lookback, 50 nodes, Outlook = Av in 4min, without trend correction
 #Model 24(1): Bitcoin, samesamem, TRIAL, see model 23 and 24 for comparison &31
@@ -22,10 +22,10 @@ from sklearn.preprocessing import MinMaxScaler
 
 t1=int(24*60*7*1.7)
 Lookback=60 #Amount of Inputs
-Window = 6 #Amount of Datapoints to Calc run Mean 
+Window = 4 #Amount of Datapoints to Calc run Mean 
 Outlook = 1 #Amount of Outputs
 
-df = pd.read_csv ('../Data/Bitcoin_Min_Jan20.csv') #Read the Data you want to model for
+df = pd.read_csv ('../Data/Lite_Min_Jan20.csv') #Read the Data you want to model for
 raw = df.iloc[0:2*t1,np.array([8,6])] #selects 2*buffer for training and test training
 size = raw.shape[0] #size of train + test data
 t = np.array(list(range(0,size))) #ind array for train + test data
@@ -33,11 +33,11 @@ t = np.array(list(range(0,size))) #ind array for train + test data
 ADJ=raw.iloc[:,0] #I actually only need the closing prices
 
 #Double the differences for better compatibility with extreme values
-mi = min(ADJ.iloc[0:int(t1/2)])/4
-ma = max(ADJ.iloc[0:int(t1/2)])*2
+mi = min(ADJ.iloc[0:int(24*60*7)])/4
+ma = max(ADJ.iloc[0:int(24*60*7)])*2
 
 #The effect of rising stock prices over increased periods of time will be
-#taken into account in the trader function itself for models 20,21,22
+#taken into account in the trader function itsaelf for models 20,21,22
 
 
 scaled = (ADJ.iloc[:]-mi) / (ma - mi)
@@ -46,7 +46,7 @@ X_train = []
 X_test = []
 y_train = []
 for j in range (Lookback, t1-Window):
-    Means = sum(scaled.iloc[j+1:j+Window+1])/Window
+    Means = sum(scaled.iloc[j+2:j+Window+2])/Window
     X_train.append(scaled.iloc[j-Lookback:j])
     X_test.append(scaled.iloc[t1-Lookback+j:t1+j])
     y_train.append(Means)
@@ -87,7 +87,7 @@ regressor.fit(X_train, y_train, epochs = 30, batch_size = 50)
 
 pred = pd.DataFrame(regressor.predict(X_test))
 
-regressor.save('model31')
+regressor.save('model42')
 
 
 plt.plot(t[0:],scaled.iloc[0:])
@@ -116,3 +116,7 @@ plt.show()
 # plt.plot(t[t1:2*t1-Window-Window-Lookback],pred.iloc[:,0])
 # plt.legend('1','2')
 # plt.show()
+
+# mB = load_model("PredModels/model31")
+# mE = load_model("PredModels/model20")
+# mL = load_model("PredModels/model20")
