@@ -90,7 +90,6 @@ def main():
         for i in range (0,3):
             executeOrder(qty[i], i, t, RSI_Trader)
         transactionrow = [t, "RSI_Trader", RSI_Trader.portfolio[0], RSI_Trader.portfolio[1], RSI_Trader.portfolio[2], RSI_Trader.bank, RSI_Trader.order[0], RSI_Trader.order[1], RSI_Trader.order[2]]
-
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         RSI_Trader.transactions = pd.concat([RSI_Trader.transactions, transactionrow_df])
         # transactionrow = [t, "RSI_Trader", RSI_Trader.portfolio, RSI_Trader.bank, RSI_Trader.order]
@@ -98,11 +97,12 @@ def main():
         
         #trader 2: Adv. Trader (Lionel)
         Preds, qty = SmartTrader(Hist[t-Lookback:t+1,:], RSIndex[t-buffer,:], Adv_Trader)
+        PredHist[t-buffer,:]=Preds
         for i in range (0,3):
             executeOrder(qty[i], i, t, Adv_Trader)
-        PredHist[t-buffer,:]=Preds
-        
-
+        transactionrow = [t, "Adv_Trader", Adv_Trader.portfolio[0], Adv_Trader.portfolio[1], Adv_Trader.portfolio[2], Adv_Trader.bank, Adv_Trader.order[0], Adv_Trader.order[1], Adv_Trader.order[2]]
+        transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
+        Adv_Trader.transactions = pd.concat([Adv_Trader.transactions, transactionrow_df])
         #Aria's trader
         
         
@@ -131,6 +131,7 @@ def main():
 if __name__ == "__main__":
     main()
     print(RSI_Trader.transactions)
+    print(Adv_Trader.transactions)
     
 #%%
 # plt.plot(Mins[0:10000],PredHist[0:10000])
