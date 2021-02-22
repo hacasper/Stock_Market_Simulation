@@ -64,7 +64,7 @@ def StupidTrader(Hist,RSP,gain,loss,RSI,trader):
     return loss,gain,rsindex,amount
     
 def TieredTrader(Hist,rsindex,trader):
-    Lookback=75
+    #Lookback=75
     amount=[0,0,0]
     for coin in range (0,3):
         if 100 > rsindex[coin] >= 90: #and order != 1:
@@ -89,16 +89,16 @@ def TieredTrader(Hist,rsindex,trader):
             amount[coin] = 0
         elif 40 > rsindex[coin] >= 30: #and order != 1:
             trader.order[coin] = 1
-            amount[coin] = (1/4)*trader.bank/Hist[Lookback,coin]
+            amount[coin] = (1/4)*trader.bank/Hist[-1,coin]
         elif 30 > rsindex[coin] >= 20: #and order != 1:
             trader.order[coin] = 1
-            amount[coin] = (1/2)*trader.bank/Hist[Lookback,coin]
+            amount[coin] = (1/2)*trader.bank/Hist[-1,coin]
         elif 20 > rsindex[coin] >= 10: #and order != 1:
             trader.order[coin] = 1
-            amount[coin] = (2/3)*trader.bank/Hist[Lookback,coin]
+            amount[coin] = (2/3)*trader.bank/Hist[-1,coin]
         elif 10 > rsindex[coin] >= 0: #and order != 1:
             trader.order[coin] = 1
-            amount[coin] = trader.bank/Hist[Lookback,coin]
+            amount[coin] = trader.bank/Hist[-1,coin]
         #if RSI < 30 and order == -1:
             #order = 0
     return amount        

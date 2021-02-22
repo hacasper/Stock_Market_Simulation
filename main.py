@@ -75,7 +75,7 @@ RSI_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0]) #Define Outside to k
 Adv_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 Hill_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 Jack_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
-Tiered_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
+Tiered_Trader = trader(400a000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 cols = ["time", "Trader", "BTC", "ETH", "LTC", "bank", "bit_trade", "eth_trade", "lite_trade"]
 RSI_Trader.transactions = pd.DataFrame(columns=cols)
 Adv_Trader.transactions = pd.DataFrame(columns=cols)
@@ -105,7 +105,7 @@ def main():
         # RSI_Trader.transactions = np.vstack(transactions, transactionrow)
         
         #trader 2: Adv. Trader (Lionel)
-        Preds, qty = SmartTrader(Hist[t-Lookback:t+1,:], RSIndex[t-buffer,:], Adv_Trader)
+        Preds, qty = SmartTrader(Hist[t-Lookback:t,:], RSIndex[t-buffer,:], Adv_Trader)
         PredHist[t-buffer,:]=Preds
         for i in range (0,3):
             executeOrder(qty[i], i, t, Adv_Trader)
@@ -114,7 +114,7 @@ def main():
         Adv_Trader.transactions = pd.concat([Adv_Trader.transactions, transactionrow_df])
         
         #trader 3: 3 times up: sell, 3 times down: buy
-        qty = HillTrade(Hist[t-5:t+1,:],Hill_Trader)
+        qty = HillTrade(Hist[t-5:t,:],Hill_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, Hill_Trader)
         transactionrow = [t, "Hill_Trader", Hill_Trader.portfolio[0], Hill_Trader.portfolio[1], Hill_Trader.portfolio[2], Hill_Trader.bank, Hill_Trader.order[0], Hill_Trader.order[1], Hill_Trader.order[2]]
@@ -122,7 +122,7 @@ def main():
         Hill_Trader.transactions = pd.concat([Hill_Trader.transactions, transactionrow_df])
         
         #trader 4: Variable Risk Trader
-        qty = JackTrader(Hist[t-Lookback:t+1,:],RSIndex[t-buffer,:],Jack_Trader)
+        qty = JackTrader(Hist[t-Lookback:t,:],RSIndex[t-buffer,:],Jack_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, Jack_Trader)
         transactionrow = [t, "Jack_Trader", Jack_Trader.portfolio[0], Jack_Trader.portfolio[1], Jack_Trader.portfolio[2], Jack_Trader.bank, Jack_Trader.order[0], Jack_Trader.order[1], Jack_Trader.order[2]]
@@ -130,7 +130,7 @@ def main():
         Jack_Trader.transactions = pd.concat([Jack_Trader.transactions, transactionrow_df])
         
         #Aria's trader
-        qty = TieredTrader(Hist[t-Lookback:t+1,:], RSIndex[t-buffer,:], Tiered_Trader)
+        qty = TieredTrader(Hist[t-Lookback:t,:], RSIndex[t-buffer,:], Tiered_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, Tiered_Trader)
         transactionrow = [t, "Tiered_Trader", Tiered_Trader.portfolio[0], Tiered_Trader.portfolio[1], Tiered_Trader.portfolio[2], Tiered_Trader.bank, Tiered_Trader.order[0], Tiered_Trader.order[1], Tiered_Trader.order[2]]
