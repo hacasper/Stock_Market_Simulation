@@ -120,7 +120,7 @@ def main():
         transactionrow = [t, "Hill_Trader", Hill_Trader.portfolio[0], Hill_Trader.portfolio[1], Hill_Trader.portfolio[2], Hill_Trader.bank, Hill_Trader.order[0], Hill_Trader.order[1], Hill_Trader.order[2]]
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Hill_Trader.transactions = pd.concat([Hill_Trader.transactions, transactionrow_df])
-        
+
         #trader 4: Variable Risk Trader
         qty = JackTrader(Hist[t-Lookback:t,:],RSIndex[t-buffer,:],Jack_Trader)
         for i in range (0,3):
