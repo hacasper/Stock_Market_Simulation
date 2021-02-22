@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 #from tensorflow.keras.models import load_model
 
 from Classes import market, trader
-from trader import StupidTrader, SmartTrader, TieredTrader, HillTrade
+from trader import StupidTrader, SmartTrader, TieredTrader, HillTrade, JackTrader
 #m16 = load_model("PredModels/model16")
 
 #from preds import PredB, PredE, PredL
@@ -74,10 +74,12 @@ order = np.zeros([horizon,3,3]) #current order state
 RSI_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0]) #Define Outside to keep data
 Adv_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 Hill_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
+Jack_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 cols = ["time", "Trader", "BTC", "ETH", "LTC", "bank", "bit_trade", "eth_trade", "lite_trade"]
 RSI_Trader.transactions = pd.DataFrame(columns=cols)
 Adv_Trader.transactions = pd.DataFrame(columns=cols)
 Hill_Trader.transactions = pd.DataFrame(columns=cols)
+Jack_Trader.transactions = pd.DataFrame(columns=cols)
 
 def main():
     for t in range (buffer,buffer + 50):
@@ -114,7 +116,13 @@ def main():
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Hill_Trader.transactions = pd.concat([Hill_Trader.transactions, transactionrow_df])
         
-            
+        #trader 4: Variable Risk Trader
+        l[t-buffer,:], g[t-buffer,:], RSIndex[t-buffer,:], qty = JackTrader(Hist[t-Lookback:t+1,:], RSP,g[t-buffer-1,:],l[t-buffer-1,:],RSIndex[t-buffer-1,:],Jack_Trader)
+        for i in range (0,3):
+            executeOrder(qty[i], i, t, Jack_Trader)
+        transactionrow = [t, "Jack_Trader", Jack_Trader.portfolio[0], Jack_Trader.portfolio[1], Jack_Trader.portfolio[2], Jack_Trader.bank, Jack_Trader.order[0], Jack_Trader.order[1], Jack_Trader.order[2]]
+        transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
+        Jack_Trader.transactions = pd.concat([Jack_Trader.transactions, transactionrow_df])
         
         #Aria's trader
         
@@ -145,6 +153,7 @@ if __name__ == "__main__":
     print(RSI_Trader.transactions)
     print(Adv_Trader.transactions)
     print(Hill_Trader.transactions)
+    print(Jack_Trader.transactions)
     
 #%%a
 # plt.plot(Mins[0:10000],PredHist[0:10000])
