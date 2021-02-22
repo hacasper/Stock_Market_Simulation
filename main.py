@@ -139,9 +139,9 @@ def main():
         Tiered_Trader.transactions = pd.concat([Tiered_Trader.transactions, transactionrow_df])
 
         #LoserTrader
-        qty = LTrader(Hist[t-5:t,:],Hill_Trader)
+        qty = LTrader(Hist[t-5:t,:],Loser_Trader)
         for i in range (0,3):
-            executeOrder(qty[i], i, t, Hill_Trader)
+            executeOrder(qty[i], i, t, Loser_Trader)
         transactionrow = [t, "Loser_Trader", Loser_Trader.portfolio[0], Loser_Trader.portfolio[1], Loser_Trader.portfolio[2], Loser_Trader.bank, Loser_Trader.order[0], Loser_Trader.order[1], Loser_Trader.order[2]]
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Loser_Trader.transactions = pd.concat([Loser_Trader.transactions, transactionrow_df])
