@@ -28,7 +28,6 @@ def getCurrentPrice(date, coin):
         print("invalid coin key")
         return 0
 def executeOrder (n, coin, date, trader): 
-
     #coin 0 : BTC
     #coin 1 : ETH
     #coin 2 : LTC
@@ -41,8 +40,11 @@ def executeOrder (n, coin, date, trader):
         elif trader.order[0] == 1:
             #print("Trader is buying bitcoin")
             saleprice = n * stockPrice
-            trader.bank = trader.bank - saleprice
-            trader.portfolio[0] = trader.portfolio[0] + n
+            if trader.bank < saleprice:
+                trader.order[0] = 0
+            else:
+                trader.bank = trader.bank - saleprice
+                trader.portfolio[0] = trader.portfolio[0] + n
             #print("Removing $" + str(saleprice) + " from bank")
             #print("Adding " + str(n) + " shares to portfolio")
             #print("Trader has $" + str(trader.bank) + " in bank")
@@ -50,8 +52,11 @@ def executeOrder (n, coin, date, trader):
         elif trader.order[0]  == -1:
             #print("Trader is selling")
             saleprice = n * stockPrice
-            trader.bank = trader.bank + saleprice
-            trader.portfolio[0] = trader.portfolio[0] - n
+            if trader.portfolio > n:
+                trader.bank = trader.bank + saleprice
+                trader.portfolio[0] = trader.portfolio[0] - n
+            else:
+                trader.order[0] = 0
             #print("Adding $" + str(saleprice) + " to bank")
             #print("Removing " + str(n) + " shares from portfolio")
 
@@ -64,8 +69,11 @@ def executeOrder (n, coin, date, trader):
         elif trader.order[1] == 1:
             #print("Trader is buying ethereum")
             saleprice = n * stockPrice
-            trader.bank = trader.bank - saleprice
-            trader.portfolio[1] = trader.portfolio[1] + n
+            if trader.bank < saleprice:
+                trader.order[1] = 0
+            else:
+                trader.bank = trader.bank - saleprice
+                trader.portfolio[1] = trader.portfolio[1] + n
             #print("Removing $" + str(saleprice) + " from bank")
             #print("Adding " + str(n) + " shares to portfolio")
             #print("Trader has $" + str(trader.bank) + " in bank")
@@ -73,8 +81,11 @@ def executeOrder (n, coin, date, trader):
         elif trader.order[1]  == -1:
             #print("Trader is selling ethereum")
             saleprice = n * stockPrice
-            trader.bank = trader.bank + saleprice
-            trader.portfolio[1] = trader.portfolio[1] - n
+            if trader.portfolio > n:
+                trader.bank = trader.bank + saleprice
+                trader.portfolio[1] = trader.portfolio[1] - n
+            else:
+                trader.order[1] = 0
             #print("Adding $" + str(saleprice) + " to bank")
             #print("Removing " + str(n) + " shares from portfolio")
             #print("Trader has $" + str(trader.bank) + " in bank")
@@ -82,23 +93,29 @@ def executeOrder (n, coin, date, trader):
     elif coin == 2:
         infoAtDate = ltcData.iloc[date,:]
         stockPrice = infoAtDate.iloc[8]
-        if trader.order[1] == 0:
+        if trader.order[2] == 0:
             saleprice = 0
             #print("Trader is holding litecoin")
-        elif trader.order[1] == 1:
+        elif trader.order[2] == 1:
             #print("Trader is buying litecoin")
             saleprice = n * stockPrice
-            trader.bank = trader.bank - saleprice
-            trader.portfolio[1] = trader.portfolio[1] + n
+            if trader.bank < saleprice:
+                trader.order[2] = 0
+            else:
+                trader.bank = trader.bank - saleprice
+                trader.portfolio[2] = trader.portfolio[2] + n
             #print("Removing $" + str(saleprice) + " from bank")
             #print("Adding " + str(n) + " shares to portfolio")
             #print("Trader has $" + str(trader.bank) + " in bank")
             #print("Trader has " + str(n) + " shares in portfolio")
-        elif trader.order[1]  == -1:
+        elif trader.order[2]  == -1:
             #print("Trader is selling litecoin")
             saleprice = n * stockPrice
-            trader.bank = trader.bank + saleprice
-            trader.portfolio[1] = trader.portfolio[1] - n
+            if trader.portfolio > n:
+                trader.bank = trader.bank + saleprice
+                trader.portfolio[2] = trader.portfolio[2] - n
+            else:
+                trader.order[2] = 0
             #print("Adding $" + str(saleprice) + " to bank")
             #print("Removing " + str(n) + " shares from portfolio")
             #print("Trader has $" + str(trader.bank) + " in bank")
