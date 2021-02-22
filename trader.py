@@ -150,6 +150,20 @@ def SmartTrader(Hist, RSI, trader):
             trader.order[j] = 1
             amount[j] = np.floor(trader.bank/Hist[-1,j]/2)
     return predi, amount
-    
-    
+
+
+def HillTrade(Hist,trader):
+    amount=[0,0,0]
+    for j in range (0,3):
+        if Hist[-1,j] > Hist[-2,j] > Hist[-3,j]:
+            trader.order[j]=-1
+            amount[j]=trader.portfolio[j]
+        elif Hist[-1,j] < Hist[-2,j] < Hist[-3,j]:
+            trader.order[j]=1
+            amount[j]=np.floor(trader.bank/Hist[-1,j]/3)
+        else:
+            trader.order[j]=0
+            amount[j]=0
+    return amount
+            
     

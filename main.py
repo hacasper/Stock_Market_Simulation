@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 #from tensorflow.keras.models import load_model
 
 from Classes import market, trader
-from trader import StupidTrader, SmartTrader
+from trader import StupidTrader, SmartTrader, TieredTrader, HillTrade
 #m16 = load_model("PredModels/model16")
 
 #from preds import PredB, PredE, PredL
@@ -20,7 +20,7 @@ from test_trader import makeOrder
 dfBTC = pd.read_csv ("Data/Bitcoin_Min_Jan20.csv")
 dfETH = pd.read_csv ("Data/Ether_Min_Jan20.csv")
 dfLTC = pd.read_csv ("Data/Lite_Min_Jan20.csv")
-df = pd.read_csv ("Data/Ether_Min_Jan20.csv")
+#df = pd.read_csv ("Data/Ether_Min_Jan20.csv")
 dim=min([dfBTC.shape[0],dfETH.shape[0],dfLTC.shape[0]])
 
 #pd.concat([dfBTC,dfETH]).drop_duplicates(subset = Pr['col2'], keep=False)
@@ -73,9 +73,11 @@ order = np.zeros([horizon,3,3]) #current order state
 #%%
 RSI_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0]) #Define Outside to keep data
 Adv_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
+Hill_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 cols = ["time", "Trader", "BTC", "ETH", "LTC", "bank", "bit_trade", "eth_trade", "lite_trade"]
 RSI_Trader.transactions = pd.DataFrame(columns=cols)
 Adv_Trader.transactions = pd.DataFrame(columns=cols)
+Hill_Trader.transactions = pd.DataFrame(columns=cols)
 
 def main():
     for t in range (buffer,buffer + 50):
@@ -103,6 +105,17 @@ def main():
         transactionrow = [t, "Adv_Trader", Adv_Trader.portfolio[0], Adv_Trader.portfolio[1], Adv_Trader.portfolio[2], Adv_Trader.bank, Adv_Trader.order[0], Adv_Trader.order[1], Adv_Trader.order[2]]
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Adv_Trader.transactions = pd.concat([Adv_Trader.transactions, transactionrow_df])
+        
+        #trader 3: 3 times up: sell, 3 times down: buy
+        qty = HillTrade(Hist[t-5:t+1,:],Hill_Trader)
+        for i in range (0,3):
+            executeOrder(qty[i], i, t, Hill_Trader)
+        transactionrow = [t, "Hill_Trader", Hill_Trader.portfolio[0], Hill_Trader.portfolio[1], Hill_Trader.portfolio[2], Hill_Trader.bank, Hill_Trader.order[0], Hill_Trader.order[1], Hill_Trader.order[2]]
+        transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
+        Hill_Trader.transactions = pd.concat([Hill_Trader.transactions, transactionrow_df])
+        
+            
+        
         #Aria's trader
         
         
@@ -115,16 +128,15 @@ def main():
         #getStockOrder(n, order, date, trader)
         #get market price at time t
         #Current Market with opening timestamp: 
-        m=market('ETH',df.iloc[t,1],df.iloc[t,5])
-        Closing[t-buffer]=m.price
+
         
         
         #trader: using RSI and market price make trading decision
         
         #update trader's portfolio/bank value based on trading decision
         
-        if t % 1000 == 0:
-            print("market price for " + m.ticker + " on " + m.date + " is " + str(m.price))
+        # if t % 1000 == 0:
+            # print("market price for " + m.ticker + " on " + m.date + " is " + str(m.price))
             
         
         #order[t-buffer]=RSI_Trader.order[1]
@@ -132,8 +144,9 @@ if __name__ == "__main__":
     main()
     print(RSI_Trader.transactions)
     print(Adv_Trader.transactions)
+    print(Hill_Trader.transactions)
     
-#%%
+#%%a
 # plt.plot(Mins[0:10000],PredHist[0:10000])
 # plt.plot(Mins[0:10000],Hist[buffer:buffer+10000,0])
 # plt.show()
