@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 #from tensorflow.keras.models import load_model
 
 from Classes import market, trader
-from trader import StupidTrader, SmartTrader, TieredTrader, HillTrade, JackTrader
+from trader import StupidTrader, SmartTrader, TieredTrader, HillTrade, JackTrader, LTrader
 #m16 = load_model("PredModels/model16")
 
 #from preds import PredB, PredE, PredL
@@ -76,13 +76,14 @@ Adv_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 Hill_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 Jack_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 Tiered_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
+Loser_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 cols = ["time", "Trader", "BTC", "ETH", "LTC", "bank", "bit_trade", "eth_trade", "lite_trade"]
 RSI_Trader.transactions = pd.DataFrame(columns=cols)
 Adv_Trader.transactions = pd.DataFrame(columns=cols)
 Hill_Trader.transactions = pd.DataFrame(columns=cols)
 Jack_Trader.transactions = pd.DataFrame(columns=cols)
 Tiered_Trader.transactions = pd.DataFrame(columns=cols)
-
+Loser_Trader.transactions = pd.DataFrame(columns=cols)
 
 def main():
     for t in range (buffer,buffer + 50):
@@ -129,7 +130,7 @@ def main():
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Jack_Trader.transactions = pd.concat([Jack_Trader.transactions, transactionrow_df])
         
-        #Aria's trader
+        #Tiered RSI trader
         qty = TieredTrader(Hist[t-Lookback:t,:], RSIndex[t-buffer,:], Tiered_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, Tiered_Trader)
@@ -137,7 +138,13 @@ def main():
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Tiered_Trader.transactions = pd.concat([Tiered_Trader.transactions, transactionrow_df])
 
-        
+        #LoserTrader
+        qty = LTrader(Hist[t-5:t,:],Hill_Trader)
+        for i in range (0,3):
+            executeOrder(qty[i], i, t, Hill_Trader)
+        transactionrow = [t, "Loser_Trader", Loser_Trader.portfolio[0], Loser_Trader.portfolio[1], Loser_Trader.portfolio[2], Loser_Trader.bank, Loser_Trader.order[0], Loser_Trader.order[1], Loser_Trader.order[2]]
+        transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
+        Loser_Trader.transactions = pd.concat([Loser_Trader.transactions, transactionrow_df])
         
         
         
@@ -166,7 +173,7 @@ if __name__ == "__main__":
     print(Hill_Trader.transactions)
     print(Jack_Trader.transactions)
     print(Tiered_Trader.transactions)
-    
+    print(Loser_Trader.transactions)
 #%%a
 # plt.plot(Mins[0:10000],PredHist[0:10000])
 # plt.plot(Mins[0:10000],Hist[buffer:buffer+10000,0])
