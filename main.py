@@ -75,7 +75,7 @@ RSI_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0]) #Define Outside to k
 Adv_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 Hill_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 Jack_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
-Tiered_Trader = trader(400a000, [0,0,0], [0,0,0], [0, 0, 0, 0])
+Tiered_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 cols = ["time", "Trader", "BTC", "ETH", "LTC", "bank", "bit_trade", "eth_trade", "lite_trade"]
 RSI_Trader.transactions = pd.DataFrame(columns=cols)
 Adv_Trader.transactions = pd.DataFrame(columns=cols)
