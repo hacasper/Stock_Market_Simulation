@@ -9,8 +9,11 @@ import numpy as np
 import math
 
 def round_down(n, decimals=0):
-    multiplier = 10 ** decimals
-    return math.floor(n * multiplier) / multiplier
+    a = np.zeros(len(n))
+    for i in range(0,len(n)):
+        multiplier = 10 ** decimals
+        a[i] = (math.floor(n[i] * multiplier) / multiplier)
+    return (a)
 
 def RSIblind(Hist,RSP,gain,loss,RSI):
     Lookback=int(60)
