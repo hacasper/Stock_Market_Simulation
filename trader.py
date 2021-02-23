@@ -6,7 +6,11 @@ Created on Tue Jan 26 13:42:26 2021
 """
 from preds import PredB, PredE, PredL
 import numpy as np
+import math
 
+def round_down(n, decimals=0):
+    multiplier = 10 ** decimals
+    return math.floor(n * multiplier) / multiplier
 
 def RSIblind(Hist,RSP,gain,loss,RSI):
     Lookback=int(60)
@@ -123,7 +127,7 @@ def JackTrader(Hist, RSI,trader):
             amount[i] = 0
         elif RSI[i] < buyrisk: #and order != -1:
             trader.order[i] = 1
-            amount[i] = buyamount*np.floor(trader.bank/Hist[-1,i])
+            amount[i] = buyamount*(round_down(trader.bank/Hist[-1,i]),2)
         #if RSI < buyrisk and order == -1:
             #order = 0
     return amount
