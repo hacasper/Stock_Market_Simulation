@@ -86,7 +86,7 @@ Tiered_Trader.transactions = pd.DataFrame(columns=cols)
 Loser_Trader.transactions = pd.DataFrame(columns=cols)
 
 def main():
-    for t in range (buffer,buffer + 50):
+    for t in range (buffer, buffer+100):
         #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
              
         #History Arrays
@@ -96,7 +96,7 @@ def main():
         
         
         #trader 1: only RSI LIONEL
-        l[t-buffer,:], g[t-buffer,:], RSIndex[t-buffer,:], qty = StupidTrader(Hist[t-Lookback:t+1,:], RSP,g[t-buffer-1,:],l[t-buffer-1,:],RSIndex[t-buffer-1,:],RSI_Trader)
+        l[t-buffer,:], g[t-buffer,:], RSIndex[t-buffer,:], qty = StupidTrader(Hist[t-Lookback:t,:], RSP,g[t-buffer-1,:],l[t-buffer-1,:],RSIndex[t-buffer-1,:],RSI_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, RSI_Trader)
         transactionrow = [t, "RSI_Trader", RSI_Trader.portfolio[0], RSI_Trader.portfolio[1], RSI_Trader.portfolio[2], RSI_Trader.bank, RSI_Trader.order[0], RSI_Trader.order[1], RSI_Trader.order[2]]
@@ -146,7 +146,7 @@ def main():
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Loser_Trader.transactions = pd.concat([Loser_Trader.transactions, transactionrow_df])
         
-        
+    
         
         
         #Define your own trader
@@ -166,6 +166,7 @@ def main():
             
         
         #order[t-buffer]=RSI_Trader.order[1]
+
 if __name__ == "__main__":
     main()
     print(RSI_Trader.transactions)
@@ -175,6 +176,16 @@ if __name__ == "__main__":
     print(Tiered_Trader.transactions)
     print(Loser_Trader.transactions)
 #%%a
+
+#Total Worth: 
+    
+RT=np.sum(RSI_Trader.portfolio*Hist[buffer+np.shape(RSI_Trader.transactions)[0]-1,:])+RSI_Trader.bank
+AT=np.sum(Adv_Trader.portfolio*Hist[buffer+np.shape(Adv_Trader.transactions)[0]-1,:])+Adv_Trader.bank
+HT=np.sum(Hill_Trader.portfolio*Hist[buffer+np.shape(Hill_Trader.transactions)[0]-1,:])+Hill_Trader.bank
+JT=np.sum(Jack_Trader.portfolio*Hist[buffer+np.shape(Jack_Trader.transactions)[0]-1,:])+Jack_Trader.bank
+TT=np.sum(Tiered_Trader.portfolio*Hist[buffer+np.shape(Tiered_Trader.transactions)[0]-1,:])+Tiered_Trader.bank
+LT=np.sum(Loser_Trader.portfolio*Hist[buffer+np.shape(Loser_Trader.transactions)[0]-1,:])+Loser_Trader.bank
+
 # plt.plot(Mins[0:10000],PredHist[0:10000])
 # plt.plot(Mins[0:10000],Hist[buffer:buffer+10000,0])
 # plt.show()

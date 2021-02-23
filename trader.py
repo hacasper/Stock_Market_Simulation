@@ -55,12 +55,12 @@ def StupidTrader(Hist,RSP,gain,loss,RSI,trader):
             amount[j] = trader.portfolio[j]
         #if RSI > 70 and order == 1:
             #order = 0
-        elif 30 < rsindex[j] < 70:
+        elif 35 < rsindex[j] < 70:
             trader.order[j] = 0
             amount[j] = 0
         elif rsindex[j] < 30: #and order != -1:
             trader.order[j] = 1
-            amount[j] = np.floor(trader.bank/Hist[-1,j]/3)
+            amount[j] = np.floor(trader.bank/Hist[-1,j]/30)
     return loss,gain,rsindex,amount
     
 def TieredTrader(Hist,rsindex,trader):
@@ -130,6 +130,7 @@ def JackTrader(Hist, RSI,trader):
 
 def SmartTrader(Hist, RSI, trader):
     Lookback=int(60)
+    buffer= 24*60*7
     predi=[0,0,0]
     #Get the predictions
     #Returns predicted average in 5 minutes, will be used to do early trades.
@@ -137,21 +138,30 @@ def SmartTrader(Hist, RSI, trader):
     predi[1] = PredE(Hist[-Lookback:,1])
     predi[2] = PredL(Hist[-Lookback:,2])
     amount=[0,0,0]
+    THIRDworth=(np.sum(trader.portfolio*Hist[buffer+np.shape(trader.transactions)[0]-1,:])+trader.bank)/3
     for j in range (0,3):
+        if trader.portfolio[j]*Hist[-1,j] > THIRDworth:
+            trader.order[j] = -1
+            amount[j]=np.ceil((trader.portfolio[j]-THIRDworth)/Hist[-1,j])
+            
+        
+        
+        
         if RSI[j] > 70 and predi[j] < Hist[-1,j]: #selling only if preds is lower than price right now
             trader.order[j] = -1
             amount[j] = trader.portfolio[j]
-        #if RSI > 70 and order == 1:
-            #order = 0
+        elif RSI[j] > 70:
+            trader.order[j] = -1
+            amount[j] = np.ceil(trader.portfolio[j]*0.8)
         elif 30 < RSI[j] < 70:
             trader.order[j] = 0
             amount[j] = 0
-        elif RSI[j] < 40 and predi[j] > Hist[-1,j]: #
+        elif RSI[j] < 40 and predi[j] > np.mean(Hist[-6:,j]): #
             trader.order[j] = 1
-            amount[j] = np.floor(trader.bank/Hist[-1,j]/2)
+            amount[j] = np.floor(trader.bank/Hist[-1,j]/10)
         elif RSI[j] < 30:
             trader.order[j] = 1
-            amount[j] = np.floor(trader.bank/Hist[-1,j]/2)
+            amount[j] = np.floor(trader.bank/Hist[-1,j]/20)
     return predi, amount
 
 
