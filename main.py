@@ -96,7 +96,7 @@ def main():
         
         
         #trader 1: only RSI LIONEL
-        l[t-buffer,:], g[t-buffer,:], RSIndex[t-buffer,:], qty = StupidTrader(Hist[t-Lookback:t,:], RSP,g[t-buffer-1,:],l[t-buffer-1,:],RSIndex[t-buffer-1,:],RSI_Trader)
+        l[t-buffer,:], g[t-buffer,:], RSIndex[t-buffer,:], qty = StupidTrader(Hist[t-Lookback:t+1,:], RSP,g[t-buffer-1,:],l[t-buffer-1,:],RSIndex[t-buffer-1,:],RSI_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, RSI_Trader)
         transactionrow = [t, "RSI_Trader", RSI_Trader.portfolio[0], RSI_Trader.portfolio[1], RSI_Trader.portfolio[2], RSI_Trader.bank, RSI_Trader.order[0], RSI_Trader.order[1], RSI_Trader.order[2]]
@@ -106,7 +106,7 @@ def main():
         # RSI_Trader.transactions = np.vstack(transactions, transactionrow)
         
         #trader 2: Adv. Trader (Lionel)
-        Preds, qty = SmartTrader(Hist[t-Lookback:t,:], RSIndex[t-buffer,:], Adv_Trader)
+        Preds, qty = SmartTrader(Hist[t-Lookback:t+1,:], RSIndex[t-buffer,:], Adv_Trader)
         PredHist[t-buffer,:]=Preds
         for i in range (0,3):
             executeOrder(qty[i], i, t, Adv_Trader)
