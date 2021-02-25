@@ -54,12 +54,15 @@ def RSIblind(Hist,RSP,gain,loss,RSI):
     
 def StupidTrader(Hist,RSP,gain,loss,RSI,trader):
     Lookback=int(60)
+    fac=0.2
+    THIRDworth=(np.sum(trader.portfolio*Hist[-1,:])+trader.bank)/3
+    maxPortfolio=THIRDworth/Hist[-1,:]
     gain, loss, rsindex = RSIblind(Hist,RSP,gain,loss,RSI)
     amount=[0,0,0]
     for j in range (0,3):
         if rsindex[j] > 70: #and order != 1:
             trader.order[j] = -1
-            amount[j] = trader.portfolio[j]
+            amount[j] = np.floor(fac*trader.portfolio[j]*10)/10
         #if RSI > 70 and order == 1:
             #order = 0
         elif 35 < rsindex[j] < 70:
@@ -67,7 +70,7 @@ def StupidTrader(Hist,RSP,gain,loss,RSI,trader):
             amount[j] = 0
         elif rsindex[j] < 30: #and order != -1:
             trader.order[j] = 1
-            amount[j] = np.floor(trader.bank/Hist[-1,j]/30)
+            amount[j] = np.floor(fac*(maxPortfolio[j]-trader.portfolio[j])*10)/10
     return loss,gain,rsindex,amount
     
 def TieredTrader(Hist,rsindex,trader):
@@ -130,13 +133,13 @@ def JackTrader(Hist, RSI,trader):
             amount[i] = 0
         elif RSI[i] < buyrisk: #and order != -1:
             trader.order[i] = 1
-            #amount[i] = buyamount*(round_down(trader.bank/Hist[-1,i]),2)
+            amount[i] = np.floor(buyamount*trader.bank/Hist[-1,i]*10)/10
             amount[i]=trader.bank/Hist[-1,i]
         #if RSI < buyrisk and order == -1:
             #order = 0
     return amount
 
-def SmartTrader(Hist, RSI, trader):
+def SmartTrader(Hist, RSI, PredHist, trader):
     Lookback=int(60)
     buffer= 24*60*7
     predi=[0,0,0]
@@ -147,9 +150,13 @@ def SmartTrader(Hist, RSI, trader):
     mt=2.5
     #Get the predictions
     #Returns predicted average in 5 minutes, will be used to do early trades.
-    predi[0] = PredB(Hist[-Lookback:,0])
-    predi[1] = PredE(Hist[-Lookback:,1])
-    predi[2] = PredL(Hist[-Lookback:,2])
+    predi[0] = np.float(PredB(Hist[-Lookback:,0]))
+    predi[1] = np.float(PredE(Hist[-Lookback:,1]))
+    predi[2] = np.float(PredL(Hist[-Lookback:,2]))
+    if np.all(PredHist) and len(PredHist):
+        m1=np.sum(PredHist[:6,:],axis=0)/6
+        m2=np.sum(Hist[-6:,:],axis=0)/6
+        predi=predi*m2/m1
     means=[np.mean(Hist[-4:,0]),np.mean(Hist[-4:,1]),np.mean(Hist[-4:,2])]
     slopes1= np.array([np.sum((t-mt)*(Hist[-6:len(Hist)-2,0]-means[0]))/np.sum((t-mt)*(t-mt)),np.sum((t-mt)*(Hist[-6:len(Hist)-2,1]-means[1]))/np.sum((t-mt)*(t-mt)),np.sum((t-mt)*(Hist[-6:len(Hist)-2,2]-means[2]))/np.sum((t-mt)*(t-mt))])
     slopes2= np.array([np.sum((t-mt)*(Hist[-4:,0]-means[0]))/np.sum((t-mt)*(t-mt)),np.sum((t-mt)*(Hist[-4:,1]-means[1]))/np.sum((t-mt)*(t-mt)),np.sum((t-mt)*(Hist[-4:,2]-means[2]))/np.sum((t-mt)*(t-mt))])
@@ -159,33 +166,47 @@ def SmartTrader(Hist, RSI, trader):
     amount=[0,0,0]
     trader.order=[0,0,0]
     for i in range(0,3):
+        '''
+        If sloppes1[i]<0 and slopes2[i]>0 and predi[i]>Hist[-1,i]:
+            buy
+        elif opposite
+            sell
+        '''
         if predi[i]>Hist[-1,i] and dif[i]>0 and RSI[i]<40 and trader.bank:
             trader.order[i]=1
-            amount[i]=0.2*(maxPortfolio[i]-trader.portfolio[i])
+            amount[i]=np.floor(0.2*10*(maxPortfolio[i]-trader.portfolio[i]))/10
         elif predi[i]>Hist[-1,i] and dif[i]>0 and RSI[i]<50 and trader.bank:
             trader.order[i]=1
-            amount[i]=0.1*(maxPortfolio[i]-trader.portfolio[i])
+            amount[i]=np.floor(0.1*10*(maxPortfolio[i]-trader.portfolio[i]))/10
         elif predi[i]>Hist[-1,i] and RSI[i]<50 and trader.bank:
             trader.order[i]=1
-            amount[i]=0.1*(maxPortfolio[i]-trader.portfolio[i])
+            amount[i]=np.floor(0.1*10*(maxPortfolio[i]-trader.portfolio[i]))/10
         elif dif[i]>0 and RSI[i]<50 and trader.bank:
             trader.order[i]=1
-            amount[i]=0.1*(maxPortfolio[i]-trader.portfolio[i])
+            amount[i]=np.floor(0.1*10*(maxPortfolio[i]-trader.portfolio[i]))/10
         if predi[i]<Hist[-1,i] and dif[i]<0 and RSI[i]>70 and trader.portfolio[i]:
             trader.order[i]=-1
-            amount[i]=0.2*trader.portfolio[i]
+            amount[i]=np.floor(0.2*10*trader.portfolio[i])/10
         elif predi[i]<Hist[-1,i] and dif[i]<0 and trader.portfolio[i]:
             trader.order[i]=-1
-            amount[i]=0.1*trader.portfolio[i]
+            amount[i]=np.floor(0.1*10*trader.portfolio[i])/10
         elif predi[i]<Hist[-1,i] and RSI[i]>70 and trader.portfolio[i]:
             trader.order[i]=-1
-            amount[i]=0.1*trader.portfolio[i]
+            amount[i]=np.floor(0.1*10*trader.portfolio[i])/10
         elif dif[i]<0 and RSI[i]>70 and trader.portfolio[i]:
             trader.order[i]=-1
-            amount[i]=0.1*trader.portfolio[i]
+            amount[i]=np.floor(0.1*10*trader.portfolio[i])/10
+        # if predi[i]>Hist[-1,i]:
+        #     trader.order[i]=1
+        #     amount[i]=0.2*(maxPortfolio[i]-trader.portfolio[i])
+        # if predi[i]<Hist[-1,i]:
+        #     trader.order[i]=-1
+        #     amount[i]=0.2*trader.portfolio[i]
+            
+            
     if any(trader.portfolio*Hist[-1,:]>THIRDworth*1.2):
         for i in range (0,3):
-            if trader.portfolio[i]*Hist[-1,i]>THIRDworth*1.2:
+            if trader.portfolio[i]*Hist[-1,i]>THIRDworth*1.2 and RSI[i]>60:
                 trader.order[i]=-1
                 amount[i]=maxPortfolio*1.2-trader.portfolio[i]
     if any(RSI < 17.5):
@@ -220,10 +241,10 @@ def LTrader(Hist,trader):
     for j in range (0,3):
         if Hist[-1,j] > Hist[-2,j] > Hist[-3,j]:
             trader.order[j]=1
-            amount[j]=trader.portfolio[j]
+            amount[j]=np.floor(trader.bank/Hist[-1,j]/3)
         elif Hist[-1,j] < Hist[-2,j] < Hist[-3,j]:
             trader.order[j]=-1
-            amount[j]=np.floor(trader.bank/Hist[-1,j]/3)
+            amount[j]=trader.portfolio[j]
         else:
             trader.order[j]=0
             amount[j]=0

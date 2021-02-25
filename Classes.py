@@ -38,7 +38,6 @@ class market:
     #def getMarketPrice(self):
     #add market file here
         
-class pred:
-    def __init__(self,horizon):
-        self.RSI=0
-        self.p1=0
+class summary:
+    def __init__(self,DataFrame):
+        self.table=DataFrame

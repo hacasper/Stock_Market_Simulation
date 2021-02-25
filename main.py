@@ -9,12 +9,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 #from tensorflow.keras.models import load_model
 
-from Classes import market, trader
+from Classes import market, trader, summary
 from trader import StupidTrader, SmartTrader, TieredTrader, HillTrade, JackTrader, LTrader
 #m16 = load_model("PredModels/model16")
 
 #from preds import PredB, PredE, PredL
-from market import executeOrder, getCurrentPrice
+from market import executeOrder, getCurrentPrice, summarize
 from test_trader import makeOrder
 
 dfBTC = pd.read_csv ("Data/Bitcoin_Min_Jan20.csv")
@@ -84,9 +84,12 @@ Hill_Trader.transactions = pd.DataFrame(columns=cols)
 Jack_Trader.transactions = pd.DataFrame(columns=cols)
 Tiered_Trader.transactions = pd.DataFrame(columns=cols)
 Loser_Trader.transactions = pd.DataFrame(columns=cols)
+cols2 = ['t', 'RSI_Total','Adv_Total','Hill_Total','Jack_Total','Tiered_Total','Loser_Total']
+Sum=summary([])
+Sum.table= pd.DataFrame(columns=cols2)
 
 def main():
-    for t in range (buffer, buffer+100):
+    for t in range (buffer, buffer+10):
         #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
              
         #History Arrays
@@ -106,8 +109,7 @@ def main():
         # RSI_Trader.transactions = np.vstack(transactions, transactionrow)
         
         #trader 2: Adv. Trader (Lionel)
-        Preds, qty = SmartTrader(Hist[t-Lookback:t+1,:], RSIndex[t-buffer,:], Adv_Trader)
-        PredHist[t-buffer,:]=Preds
+        PredHist[t-buffer,:], qty = SmartTrader(Hist[t-Lookback:t+1,:], RSIndex[t-buffer,:], PredHist[t-buffer-10:t-buffer-2,:], Adv_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, Adv_Trader)
         transactionrow = [t, "Adv_Trader", Adv_Trader.portfolio[0], Adv_Trader.portfolio[1], Adv_Trader.portfolio[2], Adv_Trader.bank, Adv_Trader.order[0], Adv_Trader.order[1], Adv_Trader.order[2]]
@@ -146,7 +148,9 @@ def main():
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Loser_Trader.transactions = pd.concat([Loser_Trader.transactions, transactionrow_df])
         
-    
+        
+        
+        summarize(Sum,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,t,Hist[t,:],cols2)
         
         
         #Define your own trader
@@ -175,6 +179,7 @@ if __name__ == "__main__":
     print(Jack_Trader.transactions)
     print(Tiered_Trader.transactions)
     print(Loser_Trader.transactions)
+    print(Sum.table)
 #%%a
 
 #Total Worth: 

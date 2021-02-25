@@ -1,5 +1,5 @@
 import pandas as pd
-
+import numpy as np
 #Market and trader objects from
 from Classes import trader 
 
@@ -121,7 +121,14 @@ def executeOrder (n, coin, date, trader):
             #print("Trader has $" + str(trader.bank) + " in bank")
             #print("Trader has " + str(n) + " shares in portfolio")
         
-
-    
-
+def summarize(sumtable,trader1,trader2,trader3,trader4,trader5,trader6,t,Hist,cols2):
+    s1=np.sum(trader1.portfolio*Hist)+trader1.bank
+    s2=np.sum(trader2.portfolio*Hist)+trader2.bank
+    s3=np.sum(trader3.portfolio*Hist)+trader3.bank
+    s4=np.sum(trader4.portfolio*Hist)+trader4.bank
+    s5=np.sum(trader5.portfolio*Hist)+trader5.bank
+    s6=np.sum(trader6.portfolio*Hist)+trader6.bank
+    sumrow = [t, s1,s2,s3,s4,s5,s6]
+    sumrowdf=pd.DataFrame([sumrow], columns=cols2)
+    sumtable.table=pd.concat([sumtable.table, sumrowdf])
 
