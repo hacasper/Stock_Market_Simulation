@@ -7,6 +7,7 @@ Created on Tue Jan 26 13:42:26 2021
 from preds import PredB, PredE, PredL
 import numpy as np
 import math
+import random
 
 def RSIblind(Hist,RSP,gain,loss,RSI):
     Lookback=int(60)
@@ -246,3 +247,20 @@ def LTrader(Hist,trader):
             trader.order[j]=0
             amount[j]=0
     return amount
+
+def RandTrader(Hist,trader):
+    amount=[0,0,0]
+    trader.order = np.random.randint(3, size=3)-1
+    for j in range(0,3):
+        if trader.order[j] == 0:
+            amount[j] = 0
+        elif trader.order[j] == 1:
+            amount[j] = trader.bank/Hist[-1,j]
+        else: 
+            trader.order[j] == -1
+            amount[j] = trader.portfolio[j]
+    return amount            
+    
+
+        
+        
