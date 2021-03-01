@@ -2,8 +2,6 @@
 
 import pandas as pd
 import datetime as dt
-import math
-import pprint
 import csv  
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,7 +12,7 @@ from trader import StupidTrader, SmartTrader, TieredTrader, HillTrade, JackTrade
 #m16 = load_model("PredModels/model16")
 
 #from preds import PredB, PredE, PredL
-from market import executeOrder, getCurrentPrice, summarize
+from market import executeOrder, summarize
 from test_trader import makeOrder
 
 dfBTC = pd.read_csv ("Data/Bitcoin_Min_Jan20.csv")
@@ -71,12 +69,15 @@ RSIndex = np.zeros([horizon,3]) #current RSI
 order = np.zeros([horizon,3,3]) #current order state
 
 #%%
-RSI_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0]) #Define Outside to keep data
+#initializing traders for testing
+RSI_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0]) 
 Adv_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 Hill_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 Jack_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 Tiered_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 Loser_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
+
+#initializing dataframes to store transactions
 cols = ["time", "Trader", "BTC", "ETH", "LTC", "bank", "bit_trade", "eth_trade", "lite_trade"]
 RSI_Trader.transactions = pd.DataFrame(columns=cols)
 Adv_Trader.transactions = pd.DataFrame(columns=cols)
@@ -84,6 +85,8 @@ Hill_Trader.transactions = pd.DataFrame(columns=cols)
 Jack_Trader.transactions = pd.DataFrame(columns=cols)
 Tiered_Trader.transactions = pd.DataFrame(columns=cols)
 Loser_Trader.transactions = pd.DataFrame(columns=cols)
+
+#initializing summary table for all traders
 cols2 = ['t', 'RSI_Total','Adv_Total','Hill_Total','Jack_Total','Tiered_Total','Loser_Total']
 Sum=summary([])
 Sum.table= pd.DataFrame(columns=cols2)
@@ -105,8 +108,6 @@ def main():
         transactionrow = [t, "RSI_Trader", RSI_Trader.portfolio[0], RSI_Trader.portfolio[1], RSI_Trader.portfolio[2], RSI_Trader.bank, RSI_Trader.order[0], RSI_Trader.order[1], RSI_Trader.order[2]]
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         RSI_Trader.transactions = pd.concat([RSI_Trader.transactions, transactionrow_df])
-        # transactionrow = [t, "RSI_Trader", RSI_Trader.portfolio, RSI_Trader.bank, RSI_Trader.order]
-        # RSI_Trader.transactions = np.vstack(transactions, transactionrow)
         
         #trader 2: Adv. Trader (Lionel)
         PredHist[t-buffer,:], qty = SmartTrader(Hist[t-Lookback:t+1,:], RSIndex[t-buffer,:], PredHist[t-buffer-10:t-buffer-2,:], Adv_Trader)
@@ -151,25 +152,7 @@ def main():
         
 
         summarize(Sum,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,t,Hist[t,:],cols2)
-        
-        
-        #Define your own trader
-        
-        #getStockOrder(n, order, date, trader)
-        #get market price at time t
-        #Current Market with opening timestamp: 
 
-        
-        
-        #trader: using RSI and market price make trading decision
-        
-        #update trader's portfolio/bank value based on trading decision
-        
-        # if t % 1000 == 0:
-            # print("market price for " + m.ticker + " on " + m.date + " is " + str(m.price))
-            
-        
-        #order[t-buffer]=RSI_Trader.order[1]
 
 if __name__ == "__main__":
     main()
