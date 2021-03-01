@@ -4,12 +4,6 @@ Created on Thu Jan 21 14:26:39 2021
 
 @author: nA
 """
-import pandas as pd
-import datetime
-import numpy as np
-import math
-import csv 
-
 
 class trader:
     #creates trader object with set bank value and portfolio value
