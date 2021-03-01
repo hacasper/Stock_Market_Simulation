@@ -149,7 +149,7 @@ def main():
         Loser_Trader.transactions = pd.concat([Loser_Trader.transactions, transactionrow_df])
         
         
-        
+
         summarize(Sum,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,t,Hist[t,:],cols2)
         
         
