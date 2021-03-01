@@ -255,7 +255,7 @@ def RandTrader(Hist,trader):
         if trader.order[j] == 0:
             amount[j] = 0
         elif trader.order[j] == 1:
-            amount[j] = trader.bank/Hist[-1,j]
+            amount[j] = 0.9*trader.bank/Hist[-1,j]
         else: 
             trader.order[j] == -1
             amount[j] = trader.portfolio[j]
