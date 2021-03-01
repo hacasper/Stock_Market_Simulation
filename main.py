@@ -89,7 +89,7 @@ Loser_Trader.transactions = pd.DataFrame(columns=cols)
 Random_Trader.transactions = pd.DataFrame(columns=cols)
 
 #initializing summary table for all traders
-cols2 = ['t', 'RSI_Total','Adv_Total','Hill_Total','Jack_Total','Tiered_Total','Loser_Total']
+cols2 = ['t', 'RSI_Total','Adv_Total','Hill_Total','Jack_Total','Tiered_Total','Loser_Total','Random_Total']
 Sum=summary([])
 Sum.table= pd.DataFrame(columns=cols2)
 
@@ -159,7 +159,7 @@ def main():
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Random_Trader.transactions = pd.concat([Random_Trader.transactions, transactionrow_df])
 
-        summarize(Sum,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,t,Hist[t,:],cols2)
+        summarize(Sum,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader,t,Hist[t,:],cols2)
 
 
 if __name__ == "__main__":
@@ -182,7 +182,7 @@ HT=np.sum(Hill_Trader.portfolio*Hist[buffer+np.shape(Hill_Trader.transactions)[0
 JT=np.sum(Jack_Trader.portfolio*Hist[buffer+np.shape(Jack_Trader.transactions)[0]-1,:])+Jack_Trader.bank
 TT=np.sum(Tiered_Trader.portfolio*Hist[buffer+np.shape(Tiered_Trader.transactions)[0]-1,:])+Tiered_Trader.bank
 LT=np.sum(Loser_Trader.portfolio*Hist[buffer+np.shape(Loser_Trader.transactions)[0]-1,:])+Loser_Trader.bank
-
+RT=np.sum(Random_Trader.portfolio*Hist[buffer+np.shape(Random_Trader.transactions)[0]-1,:])+Random_Trader.bank
 # plt.plot(Mins[0:10000],PredHist[0:10000])
 # plt.plot(Mins[0:10000],Hist[buffer:buffer+10000,0])
 # plt.show()
