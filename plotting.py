@@ -12,11 +12,13 @@ from collections import deque
 
 btcData = pd.read_csv("Data/Bitcoin_Min_Jan20.csv")
 
+buffer= 24*60*7 #1 Week data to use for models
+
 #%% live plotting with dash
-X = deque(maxlen = 20)
+X = deque(maxlen = 1000)
 X.append(1)
 
-Y = deque(maxlen = 20)
+Y = deque(maxlen = 1000)
 Y.append(1)
 app = dash.Dash(__name__)
 app.layout = html.Div(
@@ -37,9 +39,10 @@ app.layout = html.Div(
 )
 
 def update_graph_scatter(n):
-    
-    X.append(X[-1]+1)
-    Y.append(Y[-1]+Y[-1] * random.uniform(-0.1,0.1))
+    for t in range (buffer,buffer + 50):
+
+        X.append(X[-1]+t)
+        Y.append(Y[-1]+ btcData.iloc[t,8])
 
     data = plotly.graph_objs.Scatter(
             x=list(X),
@@ -47,12 +50,16 @@ def update_graph_scatter(n):
             name='Scatter',
             mode= 'lines+markers'
     )
-
+    
+    print(list(X))
+    print(list(Y))
     return {'data': [data],
             'layout' : go.Layout(xaxis=dict(
-                    range=[min(X),max(X)]),yaxis = 
-                    dict(range = [min(Y),max(Y)]),
+                    range=[buffer,max(X)]),yaxis = 
+                    dict(range = [6000,max(Y)]),
                     )}
 
 if __name__ == '__main__':
     app.run_server()
+
+# %%
