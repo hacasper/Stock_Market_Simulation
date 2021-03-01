@@ -92,7 +92,7 @@ Sum=summary([])
 Sum.table= pd.DataFrame(columns=cols2)
 
 def main():
-    for t in range (buffer, buffer+10):
+    for t in range (buffer, buffer+100):
         #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
              
         #History Arrays
