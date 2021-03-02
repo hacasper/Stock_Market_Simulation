@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 #from tensorflow.keras.models import load_model
 
 from Classes import market, trader, summary
-from trader import StupidTrader, SmartTrader, TieredTrader, HillTrade, JackTrader, LTrader
+from trader import StupidTrader, SmartTrader, TieredTrader, HillTrade, JackTrader, LTrader, RandTrader
 #m16 = load_model("PredModels/model16")
 
 #from preds import PredB, PredE, PredL
@@ -76,6 +76,7 @@ Hill_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 Jack_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 Tiered_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 Loser_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
+Random_Trader = trader(400000, [0,0,0], [0,0,0], [0 ,0 ,0 ,0])
 
 #initializing dataframes to store transactions
 cols = ["time", "Trader", "BTC", "ETH", "LTC", "bank", "bit_trade", "eth_trade", "lite_trade"]
@@ -85,14 +86,15 @@ Hill_Trader.transactions = pd.DataFrame(columns=cols)
 Jack_Trader.transactions = pd.DataFrame(columns=cols)
 Tiered_Trader.transactions = pd.DataFrame(columns=cols)
 Loser_Trader.transactions = pd.DataFrame(columns=cols)
+Random_Trader.transactions = pd.DataFrame(columns=cols)
 
 #initializing summary table for all traders
-cols2 = ['t', 'RSI_Total','Adv_Total','Hill_Total','Jack_Total','Tiered_Total','Loser_Total']
+cols2 = ['t', 'RSI_Total','Adv_Total','Hill_Total','Jack_Total','Tiered_Total','Loser_Total','Random_Total']
 Sum=summary([])
 Sum.table= pd.DataFrame(columns=cols2)
 
 def main():
-    for t in range (buffer, buffer+10):
+    for t in range (buffer, buffer+100):
         #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
              
         #History Arrays
@@ -149,9 +151,15 @@ def main():
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Loser_Trader.transactions = pd.concat([Loser_Trader.transactions, transactionrow_df])
         
-        
+        #RandomTrader
+        qty = RandTrader(Hist[t-5:t,:], Random_Trader)
+        for i in range (0,3):
+            executeOrder(qty[i], i, t, Random_Trader)
+        transactionrow = [t, "Random_Trader", Random_Trader.portfolio[0], Random_Trader.portfolio[1], Random_Trader.portfolio[2], Random_Trader.bank, Random_Trader.order[0], Random_Trader.order[1], Random_Trader.order[2]]
+        transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
+        Random_Trader.transactions = pd.concat([Random_Trader.transactions, transactionrow_df])
 
-        summarize(Sum,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,t,Hist[t,:],cols2)
+        summarize(Sum,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader,t,Hist[t,:],cols2)
 
 
 if __name__ == "__main__":
@@ -162,6 +170,7 @@ if __name__ == "__main__":
     print(Jack_Trader.transactions)
     print(Tiered_Trader.transactions)
     print(Loser_Trader.transactions)
+    print(Random_Trader.transactions)
     print(Sum.table)
 #%%a
 
@@ -173,7 +182,7 @@ HT=np.sum(Hill_Trader.portfolio*Hist[buffer+np.shape(Hill_Trader.transactions)[0
 JT=np.sum(Jack_Trader.portfolio*Hist[buffer+np.shape(Jack_Trader.transactions)[0]-1,:])+Jack_Trader.bank
 TT=np.sum(Tiered_Trader.portfolio*Hist[buffer+np.shape(Tiered_Trader.transactions)[0]-1,:])+Tiered_Trader.bank
 LT=np.sum(Loser_Trader.portfolio*Hist[buffer+np.shape(Loser_Trader.transactions)[0]-1,:])+Loser_Trader.bank
-
+RT=np.sum(Random_Trader.portfolio*Hist[buffer+np.shape(Random_Trader.transactions)[0]-1,:])+Random_Trader.bank
 # plt.plot(Mins[0:10000],PredHist[0:10000])
 # plt.plot(Mins[0:10000],Hist[buffer:buffer+10000,0])
 # plt.show()

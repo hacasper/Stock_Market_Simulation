@@ -7,6 +7,7 @@ Created on Tue Jan 26 13:42:26 2021
 from preds import PredB, PredE, PredL
 import numpy as np
 import math
+import random
 
 def RSIblind(Hist,RSP,gain,loss,RSI):
     Lookback=int(60)
@@ -135,6 +136,7 @@ def JackTrader(Hist, RSI,trader):
             #order = 0
     return amount
 
+
 def SmartTrader(Hist, RSI, PredHist, trader):
     Lookback=int(60)
     buffer= 24*60*7
@@ -170,28 +172,28 @@ def SmartTrader(Hist, RSI, PredHist, trader):
         '''
         if predi[i]>Hist[-1,i] and dif[i]>0 and RSI[i]<40 and trader.bank:
             trader.order[i]=1
-            amount[i]=np.floor(0.2*10*(maxPortfolio[i]-trader.portfolio[i]))/10
+            amount[i]=np.floor(0.4*10*(maxPortfolio[i]-trader.portfolio[i]))/10
         elif predi[i]>Hist[-1,i] and dif[i]>0 and RSI[i]<50 and trader.bank:
             trader.order[i]=1
-            amount[i]=np.floor(0.1*10*(maxPortfolio[i]-trader.portfolio[i]))/10
+            amount[i]=np.floor(0.2*10*(maxPortfolio[i]-trader.portfolio[i]))/10
         elif predi[i]>Hist[-1,i] and RSI[i]<50 and trader.bank:
             trader.order[i]=1
-            amount[i]=np.floor(0.1*10*(maxPortfolio[i]-trader.portfolio[i]))/10
+            amount[i]=np.floor(0.2*10*(maxPortfolio[i]-trader.portfolio[i]))/10
         elif dif[i]>0 and RSI[i]<50 and trader.bank:
             trader.order[i]=1
-            amount[i]=np.floor(0.1*10*(maxPortfolio[i]-trader.portfolio[i]))/10
+            amount[i]=np.floor(0.2*10*(maxPortfolio[i]-trader.portfolio[i]))/10
         if predi[i]<Hist[-1,i] and dif[i]<0 and RSI[i]>70 and trader.portfolio[i]:
             trader.order[i]=-1
-            amount[i]=np.floor(0.2*10*trader.portfolio[i])/10
+            amount[i]=np.floor(0.4*10*trader.portfolio[i])/10
         elif predi[i]<Hist[-1,i] and dif[i]<0 and trader.portfolio[i]:
             trader.order[i]=-1
-            amount[i]=np.floor(0.1*10*trader.portfolio[i])/10
+            amount[i]=np.floor(0.2*10*trader.portfolio[i])/10
         elif predi[i]<Hist[-1,i] and RSI[i]>70 and trader.portfolio[i]:
             trader.order[i]=-1
-            amount[i]=np.floor(0.1*10*trader.portfolio[i])/10
+            amount[i]=np.floor(0.2*10*trader.portfolio[i])/10
         elif dif[i]<0 and RSI[i]>70 and trader.portfolio[i]:
             trader.order[i]=-1
-            amount[i]=np.floor(0.1*10*trader.portfolio[i])/10
+            amount[i]=np.floor(0.2*10*trader.portfolio[i])/10
         # if predi[i]>Hist[-1,i]:
         #     trader.order[i]=1
         #     amount[i]=0.2*(maxPortfolio[i]-trader.portfolio[i])
@@ -245,3 +247,20 @@ def LTrader(Hist,trader):
             trader.order[j]=0
             amount[j]=0
     return amount
+
+def RandTrader(Hist,trader):
+    amount=[0,0,0]
+    trader.order = np.random.randint(3, size=3)-1
+    for j in range(0,3):
+        if trader.order[j] == 0:
+            amount[j] = 0
+        elif trader.order[j] == 1:
+            amount[j] = 0.9*trader.bank/Hist[-1,j]
+        else: 
+            trader.order[j] == -1
+            amount[j] = trader.portfolio[j]
+    return amount            
+    
+
+        
+        
