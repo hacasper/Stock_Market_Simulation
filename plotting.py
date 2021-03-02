@@ -10,8 +10,10 @@ import random
 import plotly.graph_objs as go
 from collections import deque
 
-btcData = pd.read_csv("Data/Bitcoin_Min_Jan20.csv")
 
+btcData = pd.read_csv("Data/Bitcoin_Min_Jan20.csv")
+summaryData = pd.read_csv("summary.csv")
+#%%
 buffer= 24*60*7 #1 Week data to use for models
 
 #%% live plotting with dash
@@ -56,7 +58,7 @@ def update_graph_scatter(n):
     return {'data': [data],
             'layout' : go.Layout(xaxis=dict(
                     range=[buffer,max(X)]),yaxis = 
-                    dict(range = [6000,max(Y)]),
+                    dict(range = [min(Y),max(Y)]),
                     )}
 
 if __name__ == '__main__':
