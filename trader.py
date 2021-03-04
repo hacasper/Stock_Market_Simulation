@@ -46,7 +46,7 @@ def RSIblind(Hist,RSP,gain,loss,RSI):
         return gain, loss, rsind
         
     
-def StupidTrader(Hist,RSP,gain,loss,RSI,trader):
+def RuleTrader(Hist,RSP,gain,loss,RSI,trader):
     Lookback=int(60)
     fac=0.2
     THIRDworth=(np.sum(trader.portfolio*Hist[-1,:])+trader.bank)/3
@@ -114,7 +114,7 @@ def JackTrader(Hist, RSI,trader):
     sellrisk = 70
     buyrisk = 30
     sellamount = 0.65
-    buyamount = 1
+    buyamount = 0.9
     amount=[0,0,0]
     amountcoin = [0,0,0]
     amountcash = [0,0,0]
