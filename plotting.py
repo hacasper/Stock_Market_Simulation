@@ -13,6 +13,7 @@ from collections import deque
 
 btcData = pd.read_csv("Data/Bitcoin_Min_Jan20.csv")
 summaryData = pd.read_csv("summary.csv")
+print(str(btcData))
 #%%
 buffer= 24*60*7 #1 Week data to use for models
 
