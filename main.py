@@ -8,11 +8,12 @@ import matplotlib.pyplot as plt
 #from tensorflow.keras.models import load_model
 
 from Classes import market, trader, summary
-from trader import StupidTrader, SmartTrader, TieredTrader, HillTrade, JackTrader, LTrader, RandTrader
+from trader import RuleTrader, SmartTrader, TieredTrader, HillTrade, JackTrader, LTrader, RandTrader
 #m16 = load_model("PredModels/model16")
 
 #from preds import PredB, PredE, PredL
 from market import executeOrder, summarize
+from plotting import  Plotter, Analyze
 from test_trader import makeOrder
 
 dfBTC = pd.read_csv ("Data/Bitcoin_Min_Jan20.csv")
@@ -94,7 +95,7 @@ Sum=summary([])
 Sum.table= pd.DataFrame(columns=cols2)
 
 def main():
-    for t in range (buffer, buffer+100):
+    for t in range (buffer, dim-1):
         #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
              
         #History Arrays
@@ -104,7 +105,7 @@ def main():
         
         
         #trader 1: only RSI LIONEL
-        l[t-buffer,:], g[t-buffer,:], RSIndex[t-buffer,:], qty = StupidTrader(Hist[t-Lookback:t+1,:], RSP,g[t-buffer-1,:],l[t-buffer-1,:],RSIndex[t-buffer-1,:],RSI_Trader)
+        l[t-buffer,:], g[t-buffer,:], RSIndex[t-buffer,:], qty = RuleTrader(Hist[t-Lookback:t+1,:], RSP,g[t-buffer-1,:],l[t-buffer-1,:],RSIndex[t-buffer-1,:],RSI_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, RSI_Trader)
         transactionrow = [t, "RSI_Trader", RSI_Trader.portfolio[0], RSI_Trader.portfolio[1], RSI_Trader.portfolio[2], RSI_Trader.bank, RSI_Trader.order[0], RSI_Trader.order[1], RSI_Trader.order[2]]
@@ -120,7 +121,7 @@ def main():
         Adv_Trader.transactions = pd.concat([Adv_Trader.transactions, transactionrow_df])
         
         #trader 3: 3 times up: sell, 3 times down: buy
-        qty = HillTrade(Hist[t-5:t,:],Hill_Trader)
+        qty = HillTrade(Hist[t-5:t+1,:],Hill_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, Hill_Trader)
         transactionrow = [t, "Hill_Trader", Hill_Trader.portfolio[0], Hill_Trader.portfolio[1], Hill_Trader.portfolio[2], Hill_Trader.bank, Hill_Trader.order[0], Hill_Trader.order[1], Hill_Trader.order[2]]
@@ -128,7 +129,7 @@ def main():
         Hill_Trader.transactions = pd.concat([Hill_Trader.transactions, transactionrow_df])
 
         #trader 4: Variable Risk Trader
-        qty = JackTrader(Hist[t-Lookback:t,:],RSIndex[t-buffer,:],Jack_Trader)
+        qty = JackTrader(Hist[t-Lookback:t+1,:],RSIndex[t-buffer,:],Jack_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, Jack_Trader)
         transactionrow = [t, "Jack_Trader", Jack_Trader.portfolio[0], Jack_Trader.portfolio[1], Jack_Trader.portfolio[2], Jack_Trader.bank, Jack_Trader.order[0], Jack_Trader.order[1], Jack_Trader.order[2]]
@@ -136,7 +137,7 @@ def main():
         Jack_Trader.transactions = pd.concat([Jack_Trader.transactions, transactionrow_df])
         
         #Tiered RSI trader
-        qty = TieredTrader(Hist[t-Lookback:t,:], RSIndex[t-buffer,:], Tiered_Trader)
+        qty = TieredTrader(Hist[t-Lookback:t+1,:], RSIndex[t-buffer,:], Tiered_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, Tiered_Trader)
         transactionrow = [t, "Tiered_Trader", Tiered_Trader.portfolio[0], Tiered_Trader.portfolio[1], Tiered_Trader.portfolio[2], Tiered_Trader.bank, Tiered_Trader.order[0], Tiered_Trader.order[1], Tiered_Trader.order[2]]
@@ -144,7 +145,7 @@ def main():
         Tiered_Trader.transactions = pd.concat([Tiered_Trader.transactions, transactionrow_df])
 
         #LoserTrader
-        qty = LTrader(Hist[t-5:t,:],Loser_Trader)
+        qty = LTrader(Hist[t-5:t+1,:],Loser_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, Loser_Trader)
         transactionrow = [t, "Loser_Trader", Loser_Trader.portfolio[0], Loser_Trader.portfolio[1], Loser_Trader.portfolio[2], Loser_Trader.bank, Loser_Trader.order[0], Loser_Trader.order[1], Loser_Trader.order[2]]
@@ -152,7 +153,7 @@ def main():
         Loser_Trader.transactions = pd.concat([Loser_Trader.transactions, transactionrow_df])
         
         #RandomTrader
-        qty = RandTrader(Hist[t-5:t,:], Random_Trader)
+        qty = RandTrader(Hist[t-5:t+1,:], Random_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, Random_Trader)
         transactionrow = [t, "Random_Trader", Random_Trader.portfolio[0], Random_Trader.portfolio[1], Random_Trader.portfolio[2], Random_Trader.bank, Random_Trader.order[0], Random_Trader.order[1], Random_Trader.order[2]]
@@ -164,25 +165,52 @@ def main():
 
 if __name__ == "__main__":
     main()
-    print(RSI_Trader.transactions)
-    print(Adv_Trader.transactions)
-    print(Hill_Trader.transactions)
-    print(Jack_Trader.transactions)
-    print(Tiered_Trader.transactions)
-    print(Loser_Trader.transactions)
-    print(Random_Trader.transactions)
+    # print(RSI_Trader.transactions)
+    # print(Adv_Trader.transactions)
+    # print(Hill_Trader.transactions)
+    # print(Jack_Trader.transactions)
+    # print(Tiered_Trader.transactions)
+    # print(Loser_Trader.transactions)
+    # print(Random_Trader.transactions)
     print(Sum.table)
 #%%a
 
+
+# Some Plots and Stuf
+# Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader)
+'''
+
+'''
+
+'''
+base = dt.date(2020, 1, 1)
+arr = list([base + dt.timedelta(weeks=i) for i in range(5)])
+tik = list([-buffer, 0, buffer, 2*buffer, 3*buffer])
+
+Mins=np.array(list(range(0,horizon)))
+ng=np.array(list(range(-buffer,0)))
+plt.title('Bitcoin Stockdata January 2020')
+plt.plot(ng,dfBTC.iloc[0:buffer,8])
+plt.plot(Mins,dfBTC.iloc[buffer:dim,8])
+plt.legend(['Data used for Models and Trends','Data used for Simulation'])
+plt.vlines(0,min(dfBTC.iloc[0:dim,8]),max(dfBTC.iloc[0:dim,8]),colors='k',linestyles='dashed')
+plt.xticks(tik,arr)
+plt.show()
+'''
+
+
+
+
+
 #Total Worth: 
     
-RT=np.sum(RSI_Trader.portfolio*Hist[buffer+np.shape(RSI_Trader.transactions)[0]-1,:])+RSI_Trader.bank
-AT=np.sum(Adv_Trader.portfolio*Hist[buffer+np.shape(Adv_Trader.transactions)[0]-1,:])+Adv_Trader.bank
-HT=np.sum(Hill_Trader.portfolio*Hist[buffer+np.shape(Hill_Trader.transactions)[0]-1,:])+Hill_Trader.bank
-JT=np.sum(Jack_Trader.portfolio*Hist[buffer+np.shape(Jack_Trader.transactions)[0]-1,:])+Jack_Trader.bank
-TT=np.sum(Tiered_Trader.portfolio*Hist[buffer+np.shape(Tiered_Trader.transactions)[0]-1,:])+Tiered_Trader.bank
-LT=np.sum(Loser_Trader.portfolio*Hist[buffer+np.shape(Loser_Trader.transactions)[0]-1,:])+Loser_Trader.bank
-RT=np.sum(Random_Trader.portfolio*Hist[buffer+np.shape(Random_Trader.transactions)[0]-1,:])+Random_Trader.bank
+# RT=np.sum(RSI_Trader.portfolio*Hist[buffer+np.shape(RSI_Trader.transactions)[0]-1,:])+RSI_Trader.bank
+# AT=np.sum(Adv_Trader.portfolio*Hist[buffer+np.shape(Adv_Trader.transactions)[0]-1,:])+Adv_Trader.bank
+# HT=np.sum(Hill_Trader.portfolio*Hist[buffer+np.shape(Hill_Trader.transactions)[0]-1,:])+Hill_Trader.bank
+# JT=np.sum(Jack_Trader.portfolio*Hist[buffer+np.shape(Jack_Trader.transactions)[0]-1,:])+Jack_Trader.bank
+# TT=np.sum(Tiered_Trader.portfolio*Hist[buffer+np.shape(Tiered_Trader.transactions)[0]-1,:])+Tiered_Trader.bank
+# LT=np.sum(Loser_Trader.portfolio*Hist[buffer+np.shape(Loser_Trader.transactions)[0]-1,:])+Loser_Trader.bank
+# RT=np.sum(Random_Trader.portfolio*Hist[buffer+np.shape(Random_Trader.transactions)[0]-1,:])+Random_Trader.bank
 # plt.plot(Mins[0:10000],PredHist[0:10000])
 # plt.plot(Mins[0:10000],Hist[buffer:buffer+10000,0])
 # plt.show()

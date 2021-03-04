@@ -5,6 +5,8 @@ Created on Thu Jan 21 14:26:39 2021
 @author: nA
 """
 
+
+
 class trader:
     #creates trader object with set bank value and portfolio value
     def __init__(self, bank, portfolio, order, transactions):
@@ -35,3 +37,4 @@ class market:
 class summary:
     def __init__(self,DataFrame):
         self.table=DataFrame
+
