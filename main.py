@@ -12,8 +12,8 @@ from trader import RuleTrader, SmartTrader, TieredTrader, HillTrade, JackTrader,
 #m16 = load_model("PredModels/model16")
 
 #from preds import PredB, PredE, PredL
-from market import executeOrder, summarize
-from plotting import  Plotter, Analyze
+from market import executeOrder, summarize, difference
+#from plotting import  Plotter, Analyze
 from test_trader import makeOrder
 
 dfBTC = pd.read_csv ("Data/Bitcoin_Min_Jan20.csv")
@@ -94,8 +94,13 @@ cols2 = ['t', 'RSI_Total','Adv_Total','Hill_Total','Jack_Total','Tiered_Total','
 Sum=summary([])
 Sum.table= pd.DataFrame(columns=cols2)
 
+#initializing difference table for all traders
+cols3 = ['RSI_Earnings','Adv_Earnings','Hill_Earnings','Jack_Earnings','Tiered_Earnings','Loser_Earnings','Random_Earnings']
+Diff=summary([])
+Diff.table=pd.DataFrame(columns=cols3, dtype=float)
+
 def main():
-    for t in range (buffer, dim-1):
+    for t in range (buffer, buffer + 10):
         #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
              
         #History Arrays
@@ -162,17 +167,19 @@ def main():
 
         summarize(Sum,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader,t,Hist[t,:],cols2)
 
+    difference(Sum,Diff,cols3)
 
 if __name__ == "__main__":
     main()
-    # print(RSI_Trader.transactions)
-    # print(Adv_Trader.transactions)
-    # print(Hill_Trader.transactions)
-    # print(Jack_Trader.transactions)
-    # print(Tiered_Trader.transactions)
-    # print(Loser_Trader.transactions)
-    # print(Random_Trader.transactions)
+    print(RSI_Trader.transactions)
+    print(Adv_Trader.transactions)
+    print(Hill_Trader.transactions)
+    print(Jack_Trader.transactions)
+    print(Tiered_Trader.transactions)
+    print(Loser_Trader.transactions)
+    print(Random_Trader.transactions)
     print(Sum.table)
+    print(Diff.table)
 #%%a
 
 
