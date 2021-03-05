@@ -13,7 +13,7 @@ from trader import RuleTrader, SmartTrader, TieredTrader, HillTrade, JackTrader,
 
 #from preds import PredB, PredE, PredL
 from market import executeOrder, summarize, difference
-#from plotting import  Plotter, Analyze
+from plotting import  Plotter, Analyze
 from test_trader import makeOrder
 
 dfBTC = pd.read_csv ("Data/Bitcoin_Min_Jan20.csv")
@@ -77,7 +77,7 @@ Hill_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 Jack_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 Tiered_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 Loser_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
-Random_Trader = trader(400000, [0,0,0], [0,0,0], [0 ,0 ,0 ,0])
+Random_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 
 #initializing dataframes to store transactions
 cols = ["time", "Trader", "BTC", "ETH", "LTC", "bank", "bit_trade", "eth_trade", "lite_trade"]
@@ -88,9 +88,8 @@ Jack_Trader.transactions = pd.DataFrame(columns=cols)
 Tiered_Trader.transactions = pd.DataFrame(columns=cols)
 Loser_Trader.transactions = pd.DataFrame(columns=cols)
 Random_Trader.transactions = pd.DataFrame(columns=cols)
-
 #initializing summary table for all traders
-cols2 = ['t', 'RSI_Total','Adv_Total','Hill_Total','Jack_Total','Tiered_Total','Loser_Total','Random_Total']
+cols2 = ['t', 'RSI_Total','Adv_Total','Hill_Total','Jack_Total','Tiered_Total','Loser_Total', 'Random_Total']
 Sum=summary([])
 Sum.table= pd.DataFrame(columns=cols2)
 
@@ -180,6 +179,8 @@ if __name__ == "__main__":
     print(Random_Trader.transactions)
     print(Sum.table)
     print(Diff.table)
+    Sum.table.to_csv('summary.csv')
+
 #%%a
 
 
