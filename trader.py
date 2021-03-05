@@ -170,30 +170,35 @@ def SmartTrader(Hist, RSI, PredHist, trader):
         elif opposite
             sell
         '''
-        if predi[i]>Hist[-1,i] and dif[i]>0 and RSI[i]<40 and trader.bank:
+        if predi[i]>Hist[-1,i] and dif[i]>0 and RSI[i]<40 and trader.bank and trader.blocker[i] <=0:
             trader.order[i]=1
+            trader.blocker[i]=20
             amount[i]=np.floor(0.4*10*(maxPortfolio[i]-trader.portfolio[i]))/10
-        elif predi[i]>Hist[-1,i] and dif[i]>0 and RSI[i]<50 and trader.bank:
+        elif predi[i]>Hist[-1,i] and dif[i]>0 and RSI[i]<50 and trader.bank and trader.blocker[i] <=0:
             trader.order[i]=1
+            trader.blocker[i]=20
             amount[i]=np.floor(0.2*10*(maxPortfolio[i]-trader.portfolio[i]))/10
-        elif predi[i]>Hist[-1,i] and RSI[i]<50 and trader.bank:
-            trader.order[i]=1
-            amount[i]=np.floor(0.2*10*(maxPortfolio[i]-trader.portfolio[i]))/10
-        elif dif[i]>0 and RSI[i]<50 and trader.bank:
-            trader.order[i]=1
-            amount[i]=np.floor(0.2*10*(maxPortfolio[i]-trader.portfolio[i]))/10
-        if predi[i]<Hist[-1,i] and dif[i]<0 and RSI[i]>70 and trader.portfolio[i]:
+        
+       # elif predi[i]>Hist[-1,i] and RSI[i]<50 and trader.bank:
+            # trader.order[i]=1
+            # amount[i]=np.floor(0.2*10*(maxPortfolio[i]-trader.portfolio[i]))/10
+        #elif dif[i]>0 and RSI[i]<50 and trader.bank:
+            # trader.order[i]=1
+            # amount[i]=np.floor(0.2*10*(maxPortfolio[i]-trader.portfolio[i]))/10
+        if predi[i]<Hist[-1,i] and dif[i]<0 and RSI[i]>70 and trader.portfolio[i] and trader.blocker[i] <=0:
             trader.order[i]=-1
+            trader.blocker[i]=20
             amount[i]=np.floor(0.4*10*trader.portfolio[i])/10
-        elif predi[i]<Hist[-1,i] and dif[i]<0 and trader.portfolio[i]:
+        elif predi[i]<Hist[-1,i] and dif[i]<0 and trader.portfolio[i] and trader.blocker[i] <=0:
             trader.order[i]=-1
+            trader.blocker[i]=20
             amount[i]=np.floor(0.2*10*trader.portfolio[i])/10
-        elif predi[i]<Hist[-1,i] and RSI[i]>70 and trader.portfolio[i]:
-            trader.order[i]=-1
-            amount[i]=np.floor(0.2*10*trader.portfolio[i])/10
-        elif dif[i]<0 and RSI[i]>70 and trader.portfolio[i]:
-            trader.order[i]=-1
-            amount[i]=np.floor(0.2*10*trader.portfolio[i])/10
+        #elif predi[i]<Hist[-1,i] and RSI[i]>70 and trader.portfolio[i]:
+            # trader.order[i]=-1
+            # amount[i]=np.floor(0.2*10*trader.portfolio[i])/10
+        #elif dif[i]<0 and RSI[i]>70 and trader.portfolio[i]:
+            # trader.order[i]=-1
+            # amount[i]=np.floor(0.2*10*trader.portfolio[i])/10
         # if predi[i]>Hist[-1,i]:
         #     trader.order[i]=1
         #     amount[i]=0.2*(maxPortfolio[i]-trader.portfolio[i])
@@ -202,21 +207,27 @@ def SmartTrader(Hist, RSI, PredHist, trader):
         #     amount[i]=0.2*trader.portfolio[i]
             
             
-    if any(trader.portfolio*Hist[-1,:]>THIRDworth*1.2):
+    if any(trader.portfolio*Hist[-1,:]>THIRDworth*1.5):
         for i in range (0,3):
             if trader.portfolio[i]*Hist[-1,i]>THIRDworth*1.2 and RSI[i]>60:
                 trader.order[i]=-1
-                amount[i]=maxPortfolio*1.2-trader.portfolio[i]
+                amount[i]=maxPortfolio*1.5-trader.portfolio[i]
+                trader.blocker[i]=20
     if any(RSI < 17.5):
         for i in range (0,3):
             if RSI[i]<20 and trader.portfolio[i]*Hist[-1,i]<THIRDworth:
                 trader.order[i]=1
                 amount[i]=maxPortfolio[i]*0.2-trader.portfolio[i]
+                trader.blocker[i]=20
     if any(RSI > 87.5):
         for i in range (0,3):
             if RSI[i]>87.5:
                 trader.order[i]=-1
+                trader.blocker[i]=20
                 amount[i]=trader.portfolio[i]
+    for i in range(0,3):
+        if trader.order[i] == 0:
+            trader.blocker[i]=trader.blocker[i]-1
     return predi, amount
 
 

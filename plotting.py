@@ -69,7 +69,7 @@ if __name__ == '__main__':
 # %%
 
 def Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader):
-    #%% Figure 1: 3 Coins Comparison, Coin Values in Dollars  
+    #%% Figure 1: 3 Coins Comparison, Coin Valueas in Dollars  
     
     base = dt.date(2020, 1, 1)
     dim=min([dfBTC.shape[0],dfETH.shape[0],dfLTC.shape[0]])
@@ -112,9 +112,6 @@ def Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_
     plt.legend(['Rule Trader', 'Advanced Trader', 'Up-Down Trader', 'Jacks Trader', 'Tiered Trader','Random Trader','Losing Trader'])
     plt.title('Trader Performance January 2020')
     fig2.show()
-    
-    
-    
     
     return
 

@@ -96,7 +96,7 @@ Sum.table= pd.DataFrame(columns=cols2)
 #initializing difference table for all traders
 cols3 = ['RSI_Earnings','Adv_Earnings','Hill_Earnings','Jack_Earnings','Tiered_Earnings','Loser_Earnings','Random_Earnings']
 Diff=summary([])
-Diff.table=pd.DataFrame(columns=cols3, dtype=float)
+Diff.table=pd.DataFrame(columns=cols3)
 
 def main():
     for t in range (buffer, buffer + 10):

@@ -134,7 +134,7 @@ def summarize(sumtable,trader1,trader2,trader3,trader4,trader5,trader6,trader7,t
     sumtable.table=pd.concat([sumtable.table, sumrowdf])
 
 def difference(Sum,difftable,cols3):
-    diffrow = pd.to_numeric(Sum.table.iloc[-1,1:Sum.table.shape[1]])-pd.to_numeric(Sum.table.iloc[0,1:Sum.table.shape[1]])
-    diffrowdf=pd.DataFrame([diffrow], columns=cols3, dtype=float)
-    difftable.table=pd.to_numeric(pd.concat([difftable.table, diffrowdf]))
+    diffrow = np.array((Sum.table.iloc[-1,1:Sum.table.shape[1]])-(Sum.table.iloc[0,1:Sum.table.shape[1]]))
+    diffrowdf=pd.DataFrame([diffrow], columns=cols3)
+    difftable.table=pd.concat([difftable.table, diffrowdf])
 
