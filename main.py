@@ -2,7 +2,6 @@
 
 import pandas as pd
 import datetime as dt
-import csv  
 import numpy as np
 import matplotlib.pyplot as plt
 #from tensorflow.keras.models import load_model
@@ -108,11 +107,13 @@ def main():
     for t in range (buffer, buffer + 100):
         #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
              
+        #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
+            
         #History Arrays
         Hist[t,0]=np.array(dfBTC.iloc[t,8])
         Hist[t,1]=np.array(dfETH.iloc[t,8])
         Hist[t,2]=np.array(dfLTC.iloc[t,8])
-        
+       
         
         #trader 1: only RSI LIONEL
         l[t-buffer,:], g[t-buffer,:], RSIndex[t-buffer,:], qty = RuleTrader(Hist[t-Lookback:t+1,:], RSP,g[t-buffer-1,:],l[t-buffer-1,:],RSIndex[t-buffer-1,:],RSI_Trader)
@@ -121,7 +122,7 @@ def main():
         transactionrow = [t, "RSI_Trader", RSI_Trader.portfolio[0], RSI_Trader.portfolio[1], RSI_Trader.portfolio[2], RSI_Trader.bank, RSI_Trader.order[0], RSI_Trader.order[1], RSI_Trader.order[2]]
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         RSI_Trader.transactions = pd.concat([RSI_Trader.transactions, transactionrow_df])
-        
+       
         #trader 2: Adv. Trader (Lionel)
         PredHist[t-buffer,:], qty = SmartTrader(Hist[t-Lookback:t+1,:], RSIndex[t-buffer,:], PredHist[t-buffer-10:t-buffer-2,:], Adv_Trader)
         for i in range (0,3):
@@ -129,7 +130,7 @@ def main():
         transactionrow = [t, "Adv_Trader", Adv_Trader.portfolio[0], Adv_Trader.portfolio[1], Adv_Trader.portfolio[2], Adv_Trader.bank, Adv_Trader.order[0], Adv_Trader.order[1], Adv_Trader.order[2]]
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Adv_Trader.transactions = pd.concat([Adv_Trader.transactions, transactionrow_df])
-        
+       
         #trader 3: 3 times up: sell, 3 times down: buy
         qty = HillTrade(Hist[t-5:t+1,:],Hill_Trader)
         for i in range (0,3):
@@ -137,7 +138,7 @@ def main():
         transactionrow = [t, "Hill_Trader", Hill_Trader.portfolio[0], Hill_Trader.portfolio[1], Hill_Trader.portfolio[2], Hill_Trader.bank, Hill_Trader.order[0], Hill_Trader.order[1], Hill_Trader.order[2]]
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Hill_Trader.transactions = pd.concat([Hill_Trader.transactions, transactionrow_df])
-
+ 
         #trader 4: Variable Risk Trader
         qty = JackTrader(Hist[t-Lookback:t+1,:],RSIndex[t-buffer,:],Jack_Trader)
         for i in range (0,3):
@@ -145,7 +146,7 @@ def main():
         transactionrow = [t, "Jack_Trader", Jack_Trader.portfolio[0], Jack_Trader.portfolio[1], Jack_Trader.portfolio[2], Jack_Trader.bank, Jack_Trader.order[0], Jack_Trader.order[1], Jack_Trader.order[2]]
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Jack_Trader.transactions = pd.concat([Jack_Trader.transactions, transactionrow_df])
-        
+       
         #Tiered RSI trader
         qty = TieredTrader(Hist[t-Lookback:t+1,:], RSIndex[t-buffer,:], Tiered_Trader)
         for i in range (0,3):
@@ -153,7 +154,7 @@ def main():
         transactionrow = [t, "Tiered_Trader", Tiered_Trader.portfolio[0], Tiered_Trader.portfolio[1], Tiered_Trader.portfolio[2], Tiered_Trader.bank, Tiered_Trader.order[0], Tiered_Trader.order[1], Tiered_Trader.order[2]]
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Tiered_Trader.transactions = pd.concat([Tiered_Trader.transactions, transactionrow_df])
-
+ 
         #LoserTrader
         qty = LTrader(Hist[t-5:t+1,:],RSIndex[t-buffer,:],Loser_Trader)
         for i in range (0,3):
@@ -161,7 +162,7 @@ def main():
         transactionrow = [t, "Loser_Trader", Loser_Trader.portfolio[0], Loser_Trader.portfolio[1], Loser_Trader.portfolio[2], Loser_Trader.bank, Loser_Trader.order[0], Loser_Trader.order[1], Loser_Trader.order[2]]
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Loser_Trader.transactions = pd.concat([Loser_Trader.transactions, transactionrow_df])
-        
+       
         #RandomTrader
         qty = RandTrader(Hist[t-5:t+1,:], Random_Trader)
         for i in range (0,3):
@@ -169,15 +170,15 @@ def main():
         transactionrow = [t, "Random_Trader", Random_Trader.portfolio[0], Random_Trader.portfolio[1], Random_Trader.portfolio[2], Random_Trader.bank, Random_Trader.order[0], Random_Trader.order[1], Random_Trader.order[2]]
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Random_Trader.transactions = pd.concat([Random_Trader.transactions, transactionrow_df])
-
-       #Prediction Only Trading: 
-        qty = PredTrader(PredHist[t-buffer,:],Hist[t,:], Pred_Trader)
+ 
+       #Prediction Only Trading:
+        qty = PredTrader(PredHist[t-buffer-Lookback:t-buffer+1,:],Hist[t,:], Pred_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, Pred_Trader)
         transactionrow = [t, "Pred_Trader", Pred_Trader.portfolio[0], Pred_Trader.portfolio[1], Pred_Trader.portfolio[2], Pred_Trader.bank, Pred_Trader.order[0], Pred_Trader.order[1], Pred_Trader.order[2]]
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Pred_Trader.transactions = pd.concat([Pred_Trader.transactions, transactionrow_df])
-        
+       
         #InsiderTrader
         if t<dim-1446:
             Insider=[np.mean(dfBTC.iloc[t+1440:t+1446,8]),np.mean(dfETH.iloc[t+1440:t+1446,8]),np.mean(dfLTC.iloc[t+1440:t+1446,8])]
