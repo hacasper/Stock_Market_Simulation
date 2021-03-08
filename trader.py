@@ -408,14 +408,4 @@ def ShuffleTrader(Hist, RSI,trader):
                     else:
                         trader.order[i] = 0
                         trader.order[m] = 0
-
-
-    # for j in range(0,3):
-    #     for k in range(0,3):
-    #         if j = k:
-    #             trader.order[j] = 0
-    #             trader.order[k] = 0
-    #         elif RSI[j] > sellrisk & RSI[k] > sellrisk & :
-        #if RSI < buyrisk and order == -1:
-            #order = 0
     return amount
