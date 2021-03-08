@@ -19,6 +19,7 @@ class trader:
         #1: buy, 0: hold, -1: sell
         self.transactions = transactions
         self.blocker = [0,0,0]
+        self.tradeworth = [0,0,0]
         
 class market:
     def __init__(self, ticker, date, price):

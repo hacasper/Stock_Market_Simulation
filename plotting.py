@@ -68,7 +68,7 @@ if __name__ == '__main__':
 
 # %%
 
-def Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader):
+def Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader,Insider_Trader):
     #%% Figure 1: 3 Coins Comparison, Coin Valueas in Dollars  
     
     base = dt.date(2020, 1, 1)
@@ -93,13 +93,15 @@ def Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_
     
     axs[1].plot(ng,dfETH.iloc[0:buffer,8])
     axs[1].plot(Mins,dfETH.iloc[buffer:dim,8])
-    axs[1].set_title('Etherum')
+    axs[1].set_title('Ethereum')
+    axs[1].set_ylabel('Dollar Value')
     axs[1].vlines(0,min(dfETH.iloc[0:dim,8]),max(dfETH.iloc[0:dim,8]),colors='k',linestyles='dashed')
     
     
     axs[2].plot(ng,dfLTC.iloc[0:buffer,8])
     axs[2].plot(Mins,dfLTC.iloc[buffer:dim,8])
     axs[2].set_title('Litecoin')
+    axs[2].set_xlabel('Time')
     axs[2].vlines(0,min(dfLTC.iloc[0:dim,8]),max(dfLTC.iloc[0:dim,8]),colors='k',linestyles='dashed')
    
     fig.show()    
@@ -109,7 +111,7 @@ def Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_
     fig2 = plt.figure()
     for i in range(1,8):
         plt.plot(Sum.table.iloc[:,0],Sum.table.iloc[:,i])
-    plt.legend(['Rule Trader', 'Advanced Trader', 'Up-Down Trader', 'Jacks Trader', 'Tiered Trader','Random Trader','Losing Trader'])
+    plt.legend(['Rule Trader', 'Advanced Trader', 'Up-Down Trader', 'Jacks Trader', 'Tiered Trader','Random Trader','Losing Trader','Insider Trader'])
     plt.title('Trader Performance January 2020')
     fig2.show()
     
