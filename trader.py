@@ -8,6 +8,41 @@ from preds import PredB, PredE, PredL
 import numpy as np
 import math
 import random
+import pandas as pd
+from Classes import trader, summary
+
+def iniTrader(RSI_Trader,Adv_Trader,Hill_Trader,Variable_Trader,Tiered_Trader,AntiRSI_Trader,Random_Trader,Pred_Trader,Insider_Trader):
+    RSI_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
+    Adv_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
+    Hill_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
+    Variable_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
+    Tiered_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
+    AntiRSI_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
+    Random_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
+    Pred_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
+    Insider_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
+    
+    
+    cols = ["time", "Trader", "BTC", "ETH", "LTC", "bank", "bit_trade", "eth_trade", "lite_trade"]
+    RSI_Trader.transactions = pd.DataFrame(columns=cols)
+    Adv_Trader.transactions = pd.DataFrame(columns=cols)
+    Hill_Trader.transactions = pd.DataFrame(columns=cols)
+    Variable_Trader.transactions = pd.DataFrame(columns=cols)
+    Tiered_Trader.transactions = pd.DataFrame(columns=cols)
+    AntiRSI_Trader.transactions = pd.DataFrame(columns=cols)
+    Random_Trader.transactions = pd.DataFrame(columns=cols)
+    Insider_Trader.transactions = pd.DataFrame(columns=cols)
+    Pred_Trader.transactions = pd.DataFrame(columns=cols)
+    
+    cols2 = ['t', 'RSI_Total','Adv_Total','Hill_Total','Jack_Total','Tiered_Total','Loser_Total', 'Random_Total','Pred_Total','Insider_Total']
+    Sum=summary([])
+    Sum.table= pd.DataFrame(columns=cols2)
+    #initializing difference table for all traders
+    cols3 = ['RSI_Earnings','Adv_Earnings','Hill_Earnings','Jack_Earnings','Tiered_Earnings','Loser_Earnings','Random_Earnings','Pred_Earnings','Insider_Earnings']
+    Diff=summary([])
+    Diff.table=pd.DataFrame(columns=cols3)
+    return RSI_Trader,Adv_Trader,Hill_Trader,Variable_Trader,Tiered_Trader,AntiRSI_Trader,Random_Trader,Pred_Trader,Insider_Trader,Sum,Diff,cols,cols2,cols3
+
 
 def RSIblind(Hist,RSP,gain,loss,RSI):
     Lookback=int(60)
@@ -342,17 +377,25 @@ def InsiderTrader(Hist,rsindex,Inside,trader):
             trader.blocker[j]=trader.blocker[j]-1
     return amount                    
     
-def PredTrader(predi, Hist, trader):
+def PredTrader(preds, Hist, trader):
     amount=[0,0,0]
-    preds=predi[-1,:]
-    
+    means=[0,0,0]
+    slopes1=[0,0,0]
+    slopes2=[0,0,0]
+    t=np.array([1,2,3,4])
+    tt=np.array(list(range(0,30)))
+    mt=2.5
+    means=[np.mean(Hist[-4:,0]),np.mean(Hist[-4:,1]),np.mean(Hist[-4:,2])]
+    slopes1= np.array([np.sum((t-mt)*(Hist[-6:len(Hist)-2,0]-means[0]))/np.sum((t-mt)*(t-mt)),np.sum((t-mt)*(Hist[-6:len(Hist)-2,1]-means[1]))/np.sum((t-mt)*(t-mt)),np.sum((t-mt)*(Hist[-6:len(Hist)-2,2]-means[2]))/np.sum((t-mt)*(t-mt))])
+    slopes2= np.array([np.sum((t-mt)*(Hist[-4:,0]-means[0]))/np.sum((t-mt)*(t-mt)),np.sum((t-mt)*(Hist[-4:,1]-means[1]))/np.sum((t-mt)*(t-mt)),np.sum((t-mt)*(Hist[-4:,2]-means[2]))/np.sum((t-mt)*(t-mt))])
+    slope=np.polyfit(tt,Hist[-30:,:],1)[0]
     for j in range(0,3):
-        if predi[j]>1.007 *Hist[j] and trader.blocker[j] <0:
+        if preds[j]>Hist[-1,j] and trader.blocker[j] <=0 and slope[j]<slopes1[j]<0<slopes2[j]:
             trader.order[j]=1
-            amount[j]=trader.bank/Hist[j]/3-trader.portfolio[j]
+            amount[j]=trader.bank/Hist[-1,j]/3.1-trader.portfolio[j]
             trader.blocker[j]=50
-            trader.tradeworth[j]=Hist[j]
-        elif predi[j]<1.007*Hist[j] and trader.blocker[j] <0 and trader.portfolio[j] and Hist[j]>1.05*trader.tradeworth[j]:
+            trader.tradeworth[j]=Hist[-1,j]
+        elif preds[j]<Hist[-1,j] and trader.blocker[j] <=0 and trader.portfolio[j] and Hist[-1,j]>1.05*trader.tradeworth[j] and slope[j]>slopes1[j]>0>slopes2[j]:
             trader.order[j]=-1
             amount[j]=trader.portfolio[j]
             trader.blocker[j]=20
