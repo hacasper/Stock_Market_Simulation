@@ -72,38 +72,48 @@ def TieredTrader(Hist,rsindex,trader):
     #Lookback=75
     amount=[0,0,0]
     for coin in range (0,3):
-        if 100 > rsindex[coin] >= 90: #and order != 1:
+        if 100 > rsindex[coin] >= 90 and trader.blocker[coin]<=0: #and order != 1:
             trader.order[coin] = -1
             amount[coin] = trader.portfolio[coin]
+            trader.blocker[coin]=30 
         #if RSI > 70 and order == 1:
             #order = 0
-        elif 90 > rsindex[coin] >= 80: #and order != -1:
+        elif 90 > rsindex[coin] >= 80 and trader.blocker[coin]<=0: #and order != -1:
             trader.order[coin] = -1
             amount[coin] = (2/3)*trader.portfolio[coin]
-        elif 80 > rsindex[coin] >= 70: #and order != -1:
+            trader.blocker[coin]=30
+        elif 80 > rsindex[coin] >= 70 and trader.blocker[coin]<=0: #and order != -1:
             trader.order[coin] = -1
             amount[coin] = (1/2)*trader.portfolio[coin]
-        elif 70 > rsindex[coin] >= 60: #and order != -1:
+            trader.blocker[coin]=30
+        elif 70 > rsindex[coin] >= 60 and trader.blocker[coin]<=0: #and order != -1:
             trader.order[coin] = -1
             amount[coin] = (1/4)*trader.portfolio[coin]
+            trader.blocker[coin]=30
         elif 60 > rsindex[coin] >= 50: #and order != 1:
             trader.order[coin] = 0
             amount[coin] = 0
+            trader.blocker[coin]=5
         elif 50 > rsindex[coin] >= 40: #and order != 1:
             trader.order[coin] = 0
             amount[coin] = 0
-        elif 40 > rsindex[coin] >= 30: #and order != 1:
+            trader.blocker[coin]=5
+        elif 40 > rsindex[coin] >= 30 and trader.blocker[coin]<=0: #and order != 1:
             trader.order[coin] = 1
             amount[coin] = (1/4)*trader.bank/Hist[-1,coin]
-        elif 30 > rsindex[coin] >= 20: #and order != 1:
+            trader.blocker[coin]=30
+        elif 30 > rsindex[coin] >= 20 and trader.blocker[coin]<=0: #and order != 1:
             trader.order[coin] = 1
             amount[coin] = (1/2)*trader.bank/Hist[-1,coin]
-        elif 20 > rsindex[coin] >= 10: #and order != 1:
+            trader.blocker[coin]=30
+        elif 20 > rsindex[coin] >= 10 and trader.blocker[coin]<=0: #and order != 1:
             trader.order[coin] = 1
             amount[coin] = (2/3)*trader.bank/Hist[-1,coin]
-        elif 10 > rsindex[coin] >= 0: #and order != 1:
+            trader.blocker[coin]=30
+        elif 10 > rsindex[coin] >= 0 and trader.blocker[coin]<=0: #and order != 1:
             trader.order[coin] = 1
             amount[coin] = trader.bank/Hist[-1,coin]
+            trader.blocker[coin]=30
         #if RSI < 30 and order == -1:
             #order = 0
     return amount        
@@ -122,7 +132,7 @@ def JackTrader(Hist, RSI,trader):
     for i in range(0,3):
         if RSI[i] > sellrisk: #and order != 1:
             trader.order[i] = -1
-            amount[i] = sellamount*trader.portfolio[i]
+            amount[i] = (sellamount*trader.portfolio[i])*(1-0.0055)
         #if RSI > sellrisk and order == 1:
             #order = 0
         elif buyrisk < RSI[i] < sellrisk:
@@ -130,7 +140,7 @@ def JackTrader(Hist, RSI,trader):
             amount[i] = 0
         elif RSI[i] < buyrisk: #and order != -1:
             trader.order[i] = 1
-            amountcoin[i] = buyamount*trader.bank/Hist[-1,i]
+            amountcoin[i] = (buyamount*trader.bank/Hist[-1,i])*(1-0.0055)
             amountcash[i] = amountcoin[i]*Hist[-1,i]
             amount[i] = np.floor(amountcash[i]/Hist[-1,i]*100)/100
         #if RSI < buyrisk and order == -1:
