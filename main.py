@@ -103,7 +103,7 @@ Diff=summary([])
 Diff.table=pd.DataFrame(columns=cols3)
 
 def main():
-    for t in range (buffer, dim):
+    for t in range (buffer, buffer + 5000):
         #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
              
         #History Arrays
