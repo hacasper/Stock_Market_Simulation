@@ -155,7 +155,7 @@ def SmartTrader(Hist, RSI, PredHist, trader):
     predi[2] = np.float(PredL(Hist[-Lookback:,2]))
     if np.all(PredHist) and len(PredHist):
         m1=np.sum(PredHist[:6,:],axis=0)/6
-        m2=np.sum(Hist[-9:-2,:],axis=0)/6
+        m2=np.sum(Hist[-8:-2,:],axis=0)/6
         predi=predi*m2/m1
     means=[np.mean(Hist[-4:,0]),np.mean(Hist[-4:,1]),np.mean(Hist[-4:,2])]
     means2=[np.mean(Hist[-50:,0]),np.mean(Hist[-50:,1]),np.mean(Hist[-50:,2])]
