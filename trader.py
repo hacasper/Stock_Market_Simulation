@@ -415,17 +415,17 @@ def ShuffleTrader(Hist, RSI,trader):
     amountcoin = [0,0,0]
     amountcash = [0,0,0]
     for i in range(0,3):
-        if RSI[i] > sellrisk and trader.blocker[i] = 0: #and order != 1:
+        if RSI[i] > sellrisk and trader.blocker[i] == 0: #and order != 1:
             trader.order[i] = -1
             amount[i] = (sellamount*trader.portfolio[i])*(1-0.0055)
             trader.blocker[i] = 1440
         #if RSI > sellrisk and order == 1:
             #order = 0
-        elif buyrisk < RSI[i] < sellrisk and trader.blocker[i] = 0:
+        elif buyrisk < RSI[i] < sellrisk and trader.blocker[i] == 0:
             trader.order[i] = 0
             amount[i] = 0
             for m in range(0,3):
-                    if RSI[i] > buyrisk > RSI[m] and trader.blocker[m] = 0:
+                    if RSI[i] > buyrisk > RSI[m] and trader.blocker[m] == 0:
                         trader.order[i] = -1
                         trader.order[m] = 1
                         trader.blocker[i] = 1440
@@ -439,7 +439,7 @@ def ShuffleTrader(Hist, RSI,trader):
                         amount[i] = 0
                         trader.order[m] = 0
                         amount[m] = 0
-        elif RSI[i] < buyrisk and trader.blocker[i] = 0: #and order != -1:
+        elif RSI[i] < buyrisk and trader.blocker[i] == 0: #and order != -1:
             trader.order[i] = 1
             amountcoin[i] = (buyamount*trader.bank/Hist[-1,i])*(1-0.0055)
             amountcash[i] = amountcoin[i]*Hist[-1,i]
@@ -461,4 +461,5 @@ def ShuffleTrader(Hist, RSI,trader):
         else:
         trader.order[i] = 0
         amount[i] = 0
+        trader.blocker = trader.blocker - 1
     return amount
