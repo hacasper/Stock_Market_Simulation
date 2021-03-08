@@ -158,14 +158,11 @@ def SmartTrader(Hist, RSI, PredHist, trader):
         m2=np.sum(Hist[-8:-2,:],axis=0)/6
         predi=predi*m2/m1
     means=[np.mean(Hist[-4:,0]),np.mean(Hist[-4:,1]),np.mean(Hist[-4:,2])]
-    means2=[np.mean(Hist[-50:,0]),np.mean(Hist[-50:,1]),np.mean(Hist[-50:,2])]
-    means3=[np.mean(Hist[-10:-5,0]),np.mean(Hist[-10:-5,1]),np.mean(Hist[-10:-5,2])]
     slopes1= np.array([np.sum((t-mt)*(Hist[-6:len(Hist)-2,0]-means[0]))/np.sum((t-mt)*(t-mt)),np.sum((t-mt)*(Hist[-6:len(Hist)-2,1]-means[1]))/np.sum((t-mt)*(t-mt)),np.sum((t-mt)*(Hist[-6:len(Hist)-2,2]-means[2]))/np.sum((t-mt)*(t-mt))])
     slopes2= np.array([np.sum((t-mt)*(Hist[-4:,0]-means[0]))/np.sum((t-mt)*(t-mt)),np.sum((t-mt)*(Hist[-4:,1]-means[1]))/np.sum((t-mt)*(t-mt)),np.sum((t-mt)*(Hist[-4:,2]-means[2]))/np.sum((t-mt)*(t-mt))])
     slope=np.polyfit(tt,Hist[-30:,:],1)[0]
     THIRDworth=(np.sum(trader.portfolio*Hist[-1,:])+trader.bank)/3
     maxPortfolio=THIRDworth/Hist[-1,:]
-    dif=slopes2-slopes1
     amount=[0,0,0]
     trader.order=[0,0,0]
     for i in range(0,3):
@@ -337,13 +334,15 @@ def InsiderTrader(Hist,rsindex,Inside,trader):
     
 def PredTrader(predi, Hist, trader):
     amount=[0,0,0]
+    preds=predi[-1,:]
+    
     for j in range(0,3):
-        if predi[j]>1.05 *Hist[j] and trader.blocker[j] <0:
+        if predi[j]>1.007 *Hist[j] and trader.blocker[j] <0:
             trader.order[j]=1
             amount[j]=trader.bank/Hist[j]/3-trader.portfolio[j]
             trader.blocker[j]=50
             trader.tradeworth[j]=Hist[j]
-        elif predi[j]<1.05*Hist[j] and trader.blocker[j] <0 and trader.portfolio[j] and Hist[j]>1.05*trader.tradeworth[j]:
+        elif predi[j]<1.007*Hist[j] and trader.blocker[j] <0 and trader.portfolio[j] and Hist[j]>1.05*trader.tradeworth[j]:
             trader.order[j]=-1
             amount[j]=trader.portfolio[j]
             trader.blocker[j]=20

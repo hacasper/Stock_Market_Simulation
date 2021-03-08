@@ -169,7 +169,7 @@ def main():
         Random_Trader.transactions = pd.concat([Random_Trader.transactions, transactionrow_df])
 
        #Prediction Only Trading: 
-        qty = PredTrader(PredHist[t-buffer,:],Hist[t,:], Pred_Trader)
+        qty = PredTrader(PredHist[t-buffer-Lookback:t-buffer+1,:],Hist[t,:], Pred_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, Pred_Trader)
         transactionrow = [t, "Pred_Trader", Pred_Trader.portfolio[0], Pred_Trader.portfolio[1], Pred_Trader.portfolio[2], Pred_Trader.bank, Pred_Trader.order[0], Pred_Trader.order[1], Pred_Trader.order[2]]
