@@ -11,9 +11,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from tensorflow.keras.models import load_model
-mo40 = load_model("PredModels/model40")
-mo41 = load_model("PredModels/model41")
-mo42 = load_model("PredModels/model42")  
+mo40 = load_model("PredModels/model51_2")
+mo41 = load_model("PredModels/model50")
+mo42 = load_model("PredModels/model52")  
 
 
  # mod6 = load_model('PredModels/model16/')
@@ -62,7 +62,7 @@ def PredL(prices):
     return Pr 
 """ 
 Bitcoin Info:
-    Model 40
+    Model 51 & 51_2
     Lookback=60 #Amount of Inputs
     Window = 6^+ 1 #Amount of Datapoints to Calc run Mean 
     Outlook = 1 #Amount of Outputs
@@ -73,7 +73,7 @@ Bitcoin Info:
 """
 """ 
 Ether Info:
-    Model 41
+    Model 50
     Lookback=60 #Amount of Inputs
     Window = 4 + 2 #Amount of Datapoints to Calc run Mean 
     Outlook = 1 #Amount of Outputs
@@ -84,7 +84,7 @@ Ether Info:
 """
 """ 
 Litecoin Info:
-    Model 42
+    Model 52
     Lookback=60 #Amount of Inputs
     Window = 4 + 2 #Amount of Datapoints to Calc run Mean 
     Outlook = 1 #Amount of Outputs

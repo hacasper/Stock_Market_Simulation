@@ -20,7 +20,7 @@ from tensorflow.keras.models import load_model
 #Model 24(1): Bitcoin, samesamem, TRIAL, see model 23 and 24 for comparison &31
 #Model 22: Litecoin, samesamem, see also 25&maybe 26&27&28&29
 
-t1=int(24*60*7*1.7)
+t1=int(24*60*7*2)
 Lookback=60 #Amount of Inputs
 Window = 4 #Amount of Datapoints to Calc run Mean 
 Outlook = 1 #Amount of Outputs
@@ -83,26 +83,26 @@ regressor.add(Dense(units = Outlook)) #Amount of Outputs
 
 regressor.compile(optimizer = 'adam', loss = 'mean_squared_error')
 
-regressor.fit(X_train, y_train, epochs = 30, batch_size = 50)
+regressor.fit(X_train, y_train, epochs = 50, batch_size = 50)
 
 pred = pd.DataFrame(regressor.predict(X_test))
 
-regressor.save('model42')
+regressor.save('model52')
 
-
+     
 plt.plot(t[0:],scaled.iloc[0:])
-plt.plot(t[int(t1):int(size-Lookback-Window)],pred.iloc[:,0])
+plt.plot(t[int(t1):2*t1-Lookback-Window],pred.iloc[:,0])
 plt.show()
 #t1=t1+50
-a=3
-mrks=list(range(a,a+300,10))
-x=list(range(t1+a,t1+a+300,10))
+a=5000
+mrks=list(range(a,a+300,2))
+x=list(range(t1+a,t1+a+300,2))
 plt.plot(t[t1+a:t1+300+a],scaled.iloc[t1+a:t1+300+a])
 plt.plot(t[x],pred.iloc[mrks,0],marker="o") 
 plt.show()
 
-x=list(range(t1+a,t1+a+500,50))
-mrks=list(range(a,a+500,50))
+x=list(range(t1+a,t1+a+500,2))
+mrks=list(range(a,a+500,2))
 plt.plot(t[t1+a:t1+a+500],scaled.iloc[t1+a:t1+a+500])
 plt.plot(t[x],pred.iloc[mrks,0],marker="o")
 # plt.plot(t[t1+10:t1+12],pred.iloc[10,:]) 
