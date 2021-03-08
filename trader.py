@@ -132,7 +132,7 @@ def JackTrader(Hist, RSI,trader):
     for i in range(0,3):
         if RSI[i] > sellrisk: #and order != 1:
             trader.order[i] = -1
-            amount[i] = sellamount*trader.portfolio[i]
+            amount[i] = (sellamount*trader.portfolio[i])*(1-0.0055)
         #if RSI > sellrisk and order == 1:
             #order = 0
         elif buyrisk < RSI[i] < sellrisk:
@@ -140,7 +140,7 @@ def JackTrader(Hist, RSI,trader):
             amount[i] = 0
         elif RSI[i] < buyrisk: #and order != -1:
             trader.order[i] = 1
-            amountcoin[i] = buyamount*trader.bank/Hist[-1,i]
+            amountcoin[i] = (buyamount*trader.bank/Hist[-1,i])*(1-0.0055)
             amountcash[i] = amountcoin[i]*Hist[-1,i]
             amount[i] = np.floor(amountcash[i]/Hist[-1,i]*100)/100
         #if RSI < buyrisk and order == -1:
