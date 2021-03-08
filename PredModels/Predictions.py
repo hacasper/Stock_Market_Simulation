@@ -20,7 +20,7 @@ from tensorflow.keras.models import load_model
 #Model 24(1): Bitcoin, samesamem, TRIAL, see model 23 and 24 for comparison &31
 #Model 22: Litecoin, samesamem, see also 25&maybe 26&27&28&29
 
-t1=int(24*60*7*2)
+t1=int(24*60*7)
 Lookback=60 #Amount of Inputs
 Window = 4 #Amount of Datapoints to Calc run Mean 
 Outlook = 1 #Amount of Outputs
@@ -32,12 +32,12 @@ t = np.array(list(range(0,size))) #ind array for train + test data
 
 ADJ=raw.iloc[:,0] #I actually only need the closing prices
 
-#Double the differences for better compatibility with extreme values
+#Double the differences for better compatibility with extreme values (only access training data)
 mi = min(ADJ.iloc[0:int(24*60*7)])/4
 ma = max(ADJ.iloc[0:int(24*60*7)])*2
 
 #The effect of rising stock prices over increased periods of time will be
-#taken into account in the trader function itsaelf for models 20,21,22
+#taken into account in the trader function itsaelf for models 40+ (running average correction)
 
 
 scaled = (ADJ.iloc[:]-mi) / (ma - mi)
