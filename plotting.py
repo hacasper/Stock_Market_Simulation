@@ -6,7 +6,6 @@ from dash.dependencies import Output, Input
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly
-import random
 import plotly.graph_objs as go
 from collections import deque
 import datetime as dt
@@ -15,16 +14,17 @@ import matplotlib.pyplot as plt
 
 btcData = pd.read_csv("Data/Bitcoin_Min_Jan20.csv")
 summaryData = pd.read_csv("summary.csv")
-print(summaryData)
+#print(summaryData)
+dim = summaryData.shape[0]
 
 #%%
 buffer= 24*60*7 #1 Week data to use for models
 
 #%% live plotting with dash
-X = deque(maxlen = 100)
+X = deque(maxlen = 20)
 X.append(1)
 
-Y = deque(maxlen = 100)
+Y = deque(maxlen = 20)
 Y.append(1)
 app = dash.Dash(__name__)
 app.layout = html.Div(
@@ -45,7 +45,7 @@ app.layout = html.Div(
 )
 
 def update_graph_scatter(n):
-    for t in range (buffer,buffer + 50):
+    for t in range (buffer, dim):
 
         X.append(t)
         Y.append(summaryData.iloc[t,3])
@@ -61,8 +61,8 @@ def update_graph_scatter(n):
     print(list(Y))
     return {'data': [data],
             'layout' : go.Layout(xaxis=dict(
-                    range=[buffer,max(X)]),yaxis = 
-                    dict(range = [200000,800000]),
+                    range=[min(X),max(X)]),yaxis = 
+                    dict(range = [min(Y),max(Y)]),
                     )}
 
 if __name__ == '__main__':
