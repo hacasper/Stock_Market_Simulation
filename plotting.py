@@ -14,15 +14,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 btcData = pd.read_csv("Data/Bitcoin_Min_Jan20.csv")
-#summaryData = pd.read_csv("summary.csv")
+summaryData = pd.read_csv("summary.csv")
+print(summaryData)
+
 #%%
 buffer= 24*60*7 #1 Week data to use for models
 
 #%% live plotting with dash
-X = deque(maxlen = 1000)
+X = deque(maxlen = 100)
 X.append(1)
 
-Y = deque(maxlen = 1000)
+Y = deque(maxlen = 100)
 Y.append(1)
 app = dash.Dash(__name__)
 app.layout = html.Div(
@@ -45,8 +47,8 @@ app.layout = html.Div(
 def update_graph_scatter(n):
     for t in range (buffer,buffer + 50):
 
-        X.append(X[-1]+t)
-        Y.append(Y[-1]+ btcData.iloc[t,8])
+        X.append(t)
+        Y.append(summaryData.iloc[t,3])
 
     data = plotly.graph_objs.Scatter(
             x=list(X),
@@ -60,7 +62,7 @@ def update_graph_scatter(n):
     return {'data': [data],
             'layout' : go.Layout(xaxis=dict(
                     range=[buffer,max(X)]),yaxis = 
-                    dict(range = [min(Y),max(Y)]),
+                    dict(range = [200000,800000]),
                     )}
 
 if __name__ == '__main__':
