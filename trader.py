@@ -459,7 +459,7 @@ def ShuffleTrader(Hist, RSI,trader):
                         trader.order[m] = 0
                         amount[m] = 0
         else:
-        trader.order[i] = 0
-        amount[i] = 0
-        trader.blocker = trader.blocker - 1
+            trader.order[i] = 0
+            amount[i] = 0
+            trader.blocker = trader.blocker - 1
     return amount
