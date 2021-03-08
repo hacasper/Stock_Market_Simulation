@@ -70,8 +70,13 @@ if __name__ == '__main__':
 
 # %%
 
+<<<<<<< HEAD
 def Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader,Insider_Trader,Shuffle_Trader):
     #%% Figure 1: 3 Coins Comparison, Coin Valueas in Dollars  
+=======
+def Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader,Insider_Trader):
+    #%% Figure 1: 3 Coins Comparison, Coin Values in Dollars  
+>>>>>>> 667e366dc32d96ca19940e4461ac8bbd2c578266
     
     base = dt.date(2020, 1, 1)
     dim=min([dfBTC.shape[0],dfETH.shape[0],dfLTC.shape[0]])
@@ -109,7 +114,7 @@ def Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_
     fig.show()    
     
     #%% Figure 2:
-        
+    # Total worth as a function of time (sum of portfolio value plus bank)    
     fig2 = plt.figure()
     for i in range(1,8):
         plt.plot(Sum.table.iloc[:,0],Sum.table.iloc[:,i])
