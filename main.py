@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 #from tensorflow.keras.models import load_model
 
 from Classes import market, trader, summary
-from trader import RuleTrader, SmartTrader, TieredTrader, HillTrade, JackTrader, LTrader, RandTrader, PredTrader, InsiderTrader
+from trader import RuleTrader, SmartTrader, TieredTrader, HillTrade, JackTrader, LTrader, RandTrader, PredTrader, InsiderTrader, ShuffleTrader
 #m16 = load_model("PredModels/model16")
 
 #from preds import PredB, PredE, PredL
@@ -80,6 +80,7 @@ Loser_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 Random_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 Insider_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 Pred_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
+Shuffle_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
 
 #initializing dataframes to store transactions
 cols = ["time", "Trader", "BTC", "ETH", "LTC", "bank", "bit_trade", "eth_trade", "lite_trade"]
@@ -92,18 +93,19 @@ Loser_Trader.transactions = pd.DataFrame(columns=cols)
 Random_Trader.transactions = pd.DataFrame(columns=cols)
 Insider_Trader.transactions = pd.DataFrame(columns=cols)
 Pred_Trader.transactions = pd.DataFrame(columns=cols)
+Shuffle_Trader.transactions = pd.DataFrame(columns=cols)
 #initializing summary table for all traders
-cols2 = ['t', 'RSI_Total','Adv_Total','Hill_Total','Jack_Total','Tiered_Total','Loser_Total', 'Random_Total','Pred_Total','Insider_Total']
+cols2 = ['t', 'RSI_Total','Adv_Total','Hill_Total','Jack_Total','Tiered_Total','Loser_Total', 'Random_Total','Pred_Total','Insider_Total','Shuffle_Total']
 Sum=summary([])
 Sum.table= pd.DataFrame(columns=cols2)
 
 #initializing difference table for all traders
-cols3 = ['RSI_Earnings','Adv_Earnings','Hill_Earnings','Jack_Earnings','Tiered_Earnings','Loser_Earnings','Random_Earnings','Pred_Earnings','Insider_Earnings']
+cols3 = ['RSI_Earnings','Adv_Earnings','Hill_Earnings','Jack_Earnings','Tiered_Earnings','Loser_Earnings','Random_Earnings','Pred_Earnings','Insider_Earnings','Shuffle_Earnings']
 Diff=summary([])
 Diff.table=pd.DataFrame(columns=cols3)
 
 def main():
-    for t in range (buffer, dim):
+    for t in range (buffer, buffer + 100):
         #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
              
         #History Arrays
@@ -187,8 +189,16 @@ def main():
         transactionrow = [t, "Insider_Trader", Insider_Trader.portfolio[0], Insider_Trader.portfolio[1], Insider_Trader.portfolio[2], Insider_Trader.bank, Insider_Trader.order[0], Insider_Trader.order[1], Insider_Trader.order[2]]
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Insider_Trader.transactions = pd.concat([Insider_Trader.transactions, transactionrow_df])
+
+        #ShuffleTrader
+        qty = ShuffleTrader(Hist[t-Lookback:t+1,:],RSIndex[t-buffer,:],Shuffle_Trader)
+        for i in range (0,3):
+            executeOrder(qty[i], i, t, Shuffle_Trader)
+        transactionrow = [t, "Shuffle_Trader", Shuffle_Trader.portfolio[0], Shuffle_Trader.portfolio[1], Shuffle_Trader.portfolio[2], Shuffle_Trader.bank, Shuffle_Trader.order[0], Shuffle_Trader.order[1], Shuffle_Trader.order[2]]
+        transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
+        Shuffle_Trader.transactions = pd.concat([Shuffle_Trader.transactions, transactionrow_df])
     
-        summarize(Sum,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader,Pred_Trader,Insider_Trader,t,Hist[t,:],cols2)
+        summarize(Sum,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader,Pred_Trader,Insider_Trader,Shuffle_Trader,t,Hist[t,:],cols2)
         if t%1000 == 0:
             print (Sum.table)
 
@@ -204,6 +214,7 @@ if __name__ == "__main__":
     print(Tiered_Trader.transactions)
     print(Loser_Trader.transactions)
     print(Random_Trader.transactions)
+    print(Shuffle_Trader.transactions)
     print(Sum.table)
     print(Diff.table)
     Sum.table.to_csv('summary.csv')
@@ -212,7 +223,7 @@ if __name__ == "__main__":
 
 
 # Some Plots and Stuf
-# Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader,Insider_Trader)
+Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader,Insider_Trader)
 '''
 
 '''
@@ -253,3 +264,4 @@ Mins=np.array(list(range(0,horizon)))
 plt.plot(Mins[-10000:],PredHist[-10000:,0])
 plt.plot(Mins[-10000:],Hist[dim-10000:,0])
 plt.show()
+# %%
