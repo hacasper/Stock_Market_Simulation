@@ -152,7 +152,7 @@ def executeOrder (n, coin, date, trader):
             #print("Trader has $" + str(trader.bank) + " in bank")
             #print("Trader has " + str(n) + " shares in portfolio")
         
-def summarize(sumtable,trader1,trader2,trader3,trader4,trader5,trader6,trader7,trader8,trader9,t,Hist,cols2):
+def summarize(sumtable,trader1,trader2,trader3,trader4,trader5,trader6,trader7,trader8,trader9,trader10,t,Hist,cols2):
     s1=np.sum(trader1.portfolio*Hist)+trader1.bank
     s2=np.sum(trader2.portfolio*Hist)+trader2.bank
     s3=np.sum(trader3.portfolio*Hist)+trader3.bank
@@ -162,7 +162,8 @@ def summarize(sumtable,trader1,trader2,trader3,trader4,trader5,trader6,trader7,t
     s7=np.sum(trader7.portfolio*Hist)+trader7.bank
     s8=np.sum(trader8.portfolio*Hist)+trader8.bank
     s9=np.sum(trader9.portfolio*Hist)+trader9.bank
-    sumrow = [t, s1,s2,s3,s4,s5,s6,s7,s8,s9]
+    s10=np.sum(trader10.portfolio*Hist)+trader10.bank
+    sumrow = [t, s1,s2,s3,s4,s5,s6,s7,s8,s9,s10]
     sumrowdf=pd.DataFrame([sumrow], columns=cols2)
     sumtable.table=pd.concat([sumtable.table, sumrowdf])
 

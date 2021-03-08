@@ -11,7 +11,7 @@ import random
 import pandas as pd
 from Classes import trader, summary
 
-def iniTrader(RSI_Trader,Adv_Trader,Hill_Trader,Variable_Trader,Tiered_Trader,AntiRSI_Trader,Random_Trader,Pred_Trader,Insider_Trader):
+def iniTrader(RSI_Trader,Adv_Trader,Hill_Trader,Variable_Trader,Tiered_Trader,AntiRSI_Trader,Random_Trader,Pred_Trader,Insider_Trader,Shuffle_Trader):
     RSI_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
     Adv_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
     Hill_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
@@ -21,7 +21,7 @@ def iniTrader(RSI_Trader,Adv_Trader,Hill_Trader,Variable_Trader,Tiered_Trader,An
     Random_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
     Pred_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
     Insider_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
-    
+    Shuffle_Trader = trader(400000, [0,0,0], [0,0,0], [0, 0, 0, 0])
     
     cols = ["time", "Trader", "BTC", "ETH", "LTC", "bank", "bit_trade", "eth_trade", "lite_trade"]
     RSI_Trader.transactions = pd.DataFrame(columns=cols)
@@ -33,15 +33,16 @@ def iniTrader(RSI_Trader,Adv_Trader,Hill_Trader,Variable_Trader,Tiered_Trader,An
     Random_Trader.transactions = pd.DataFrame(columns=cols)
     Insider_Trader.transactions = pd.DataFrame(columns=cols)
     Pred_Trader.transactions = pd.DataFrame(columns=cols)
+    Shuffle_Trader.transactions = pd.DataFrame(columns=cols)
     
-    cols2 = ['t', 'RSI_Total','Adv_Total','Hill_Total','Jack_Total','Tiered_Total','Loser_Total', 'Random_Total','Pred_Total','Insider_Total']
+    cols2 = ['t', 'RSI_Total','Adv_Total','Hill_Total','Jack_Total','Tiered_Total','Loser_Total', 'Random_Total','Pred_Total','Insider_Total','Shuffle_Total']
     Sum=summary([])
     Sum.table= pd.DataFrame(columns=cols2)
     #initializing difference table for all traders
-    cols3 = ['RSI_Earnings','Adv_Earnings','Hill_Earnings','Jack_Earnings','Tiered_Earnings','Loser_Earnings','Random_Earnings','Pred_Earnings','Insider_Earnings']
+    cols3 = ['RSI_Earnings','Adv_Earnings','Hill_Earnings','Jack_Earnings','Tiered_Earnings','Loser_Earnings','Random_Earnings','Pred_Earnings','Insider_Earnings','Shuffle_Earnings']
     Diff=summary([])
     Diff.table=pd.DataFrame(columns=cols3)
-    return RSI_Trader,Adv_Trader,Hill_Trader,Variable_Trader,Tiered_Trader,AntiRSI_Trader,Random_Trader,Pred_Trader,Insider_Trader,Sum,Diff,cols,cols2,cols3
+    return RSI_Trader,Adv_Trader,Hill_Trader,Variable_Trader,Tiered_Trader,AntiRSI_Trader,Random_Trader,Pred_Trader,Insider_Trader,Shuffle_Trader,Sum,Diff,cols,cols2,cols3
 
 
 def RSIblind(Hist,RSP,gain,loss,RSI):
@@ -160,7 +161,7 @@ def JackTrader(Hist, RSI,trader):
     sellrisk = 70
     buyrisk = 30
     sellamount = 0.65
-    buyamount = 0.9
+    buyamount = 1
     amount=[0,0,0]
     amountcoin = [0,0,0]
     amountcash = [0,0,0]
@@ -404,4 +405,50 @@ def PredTrader(preds, Hist, trader):
             trader.blocker[j]=trader.blocker[j]-1
     return amount
             
-            
+def ShuffleTrader(Hist, RSI,trader):
+    Lookback = int(60)
+    sellrisk = 70
+    buyrisk = 30
+    sellamount = 0.65
+    buyamount = 1
+    amount=[0,0,0]
+    amountcoin = [0,0,0]
+    amountcash = [0,0,0]
+    for i in range(0,3):
+        if RSI[i] > sellrisk: #and order != 1:
+            trader.order[i] = -1
+            amount[i] = (sellamount*trader.portfolio[i])*(1-0.0055)
+        #if RSI > sellrisk and order == 1:
+            #order = 0
+        elif buyrisk < RSI[i] < sellrisk:
+            trader.order[i] = 0
+            amount[i] = 0
+            for m in range(0,3):
+                    if RSI[i] > buyrisk > RSI[m]:
+                        trader.order[i] = -1
+                        trader.order[m] = 1
+                        amount[i] = (sellamount*trader.portfolio[i])*(1-0.0055)
+                        amountcoin[m] = (buyamount*trader.bank/Hist[-1,m])*(1-0.0055)
+                        amountcash[m] = amountcoin[m]*Hist[-1,m]
+                        amount[m] = np.floor(amountcash[m]/Hist[-1,m]*100)/100
+                    else:
+                        trader.order[i] = 0
+                        trader.order[m] = 0
+        elif RSI[i] < buyrisk: #and order != -1:
+            trader.order[i] = 1
+            amountcoin[i] = (buyamount*trader.bank/Hist[-1,i])*(1-0.0055)
+            amountcash[i] = amountcoin[i]*Hist[-1,i]
+            amount[i] = np.floor(amountcash[i]/Hist[-1,i]*100)/100
+            if amount[i] > trader.bank:
+                for m in range(0,3):
+                    if RSI[i] > RSI[m]:
+                        trader.order[i] = -1
+                        trader.order[m] = 1
+                        amount[i] = (sellamount*trader.portfolio[i])*(1-0.0055)
+                        amountcoin[m] = (buyamount*trader.bank/Hist[-1,m])*(1-0.0055)
+                        amountcash[m] = amountcoin[m]*Hist[-1,m]
+                        amount[m] = np.floor(amountcash[m]/Hist[-1,m]*100)/100
+                    else:
+                        trader.order[i] = 0
+                        trader.order[m] = 0
+    return amount
