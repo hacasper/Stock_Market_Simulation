@@ -70,8 +70,8 @@ if __name__ == '__main__':
 
 # %%
 
-def Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader,Insider_Trader):
-    #%% Figure 1: 3 Coins Comparison, Coin Values in Dollars  
+def Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader,Insider_Trader,Shuffle_Trader):
+    #%% Figure 1: 3 Coins Comparison, Coin Valueas in Dollars  
     
     base = dt.date(2020, 1, 1)
     dim=min([dfBTC.shape[0],dfETH.shape[0],dfLTC.shape[0]])
@@ -111,15 +111,15 @@ def Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_
     #%% Figure 2:
     # Total worth as a function of time (sum of portfolio value plus bank)    
     fig2 = plt.figure()
-    for i in range(1,8):
+    for i in range(1,10):
         plt.plot(Sum.table.iloc[:,0],Sum.table.iloc[:,i])
-    plt.legend(['Rule Trader', 'Advanced Trader', 'Up-Down Trader', 'Jacks Trader', 'Tiered Trader','Random Trader','Losing Trader','Insider Trader'])
+    plt.legend(['Rule Trader', 'Advanced Trader', 'Up-Down Trader', 'Jacks Trader', 'Tiered Trader','Random Trader','Losing Trader','Insider Trader','Shuffle_Trader'])
     plt.title('Trader Performance January 2020')
     fig2.show()
     
     return
 
-def Analyze(Sum,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader):
+def Analyze(Sum,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader,Shuffle_Trader):
     # Get info about total trades
     # Get info about optimal trades
     # Get info about anything else you migth be interested in.
