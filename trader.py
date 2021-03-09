@@ -418,51 +418,51 @@ def ShuffleTrader(Hist, RSI,trader):
     amountcoin = [0,0,0]
     amountcash = [0,0,0]
     for i in range(0,3):
-        if RSI[i] > sellrisk and trader.blocker[i] <= 0: #and order != 1:
+        if RSI[i] > sellrisk and trader.blocker[i] == 0: #and order != 1:
             trader.order[i] = -1
             amount[i] = (sellamount*trader.portfolio[i])*(1-0.0055)
-            trader.blocker[i]=50
+            trader.blocker[i] = 1440
         #if RSI > sellrisk and order == 1:
             #order = 0
-        elif buyrisk < RSI[i] < sellrisk:
+        elif buyrisk < RSI[i] < sellrisk and trader.blocker[i] == 0:
             trader.order[i] = 0
             amount[i] = 0
-            trader.blocker[i]=trader.blocker[i]-1
             for m in range(0,3):
-                    if RSI[i] > buyrisk + 10 and buyrisk > RSI[m] and trader.blocker[i]<=0 and trader.blocker[m]<=0:
+                    if RSI[i] > buyrisk > RSI[m] and trader.blocker[m] == 0:
                         trader.order[i] = -1
                         trader.order[m] = 1
+                        trader.blocker[i] = 1440
+                        trader.blocker[m] = 1440
                         amount[i] = (sellamount*trader.portfolio[i])*(1-0.0055)
                         amountcoin[m] = (buyamount*trader.bank/Hist[-1,m])*(1-0.0055)
                         amountcash[m] = amountcoin[m]*Hist[-1,m]
                         amount[m] = np.floor(amountcash[m]/Hist[-1,m]*100)/100
-                        trader.blocker[i]=50
-                        trader.blocker[m]=50
                     else:
                         trader.order[i] = 0
+                        amount[i] = 0
                         trader.order[m] = 0
-                        trader.blocker[i]=trader.blocker[i]-1
-                        trader.blocker[m]=trader.blocker[m]-1
-        elif RSI[i] < buyrisk and trader.blocker[i] <=0: #and order != -1:
+                        amount[m] = 0
+        elif RSI[i] < buyrisk and trader.blocker[i] == 0: #and order != -1:
             trader.order[i] = 1
             amountcoin[i] = (buyamount*trader.bank/Hist[-1,i])*(1-0.0055)
             amountcash[i] = amountcoin[i]*Hist[-1,i]
-            trader.blocker[i]=50
             amount[i] = np.floor(amountcash[i]/Hist[-1,i]*100)/100
             if amount[i] > trader.bank:
                 for m in range(0,3):
-                    if RSI[i] > RSI[m] and trader.blocker[i]<=0 and trader.blocker[m]<=0:
+                    if RSI[i] > RSI[m]:
                         trader.order[i] = -1
                         trader.order[m] = 1
                         amount[i] = (sellamount*trader.portfolio[i])*(1-0.0055)
                         amountcoin[m] = (buyamount*trader.bank/Hist[-1,m])*(1-0.0055)
                         amountcash[m] = amountcoin[m]*Hist[-1,m]
                         amount[m] = np.floor(amountcash[m]/Hist[-1,m]*100)/100
-                        trader.blocker[i]=50
-                        trader.blocker[m]=50
                     else:
                         trader.order[i] = 0
-                        trader.blocker[i] = trader.blocker[i]-1
+                        amount[i] = 0
                         trader.order[m] = 0
-                        trader.blocker[m] = trader.blocker[m]-1
+                        amount[m] = 0
+        else:
+            trader.order[i] = 0
+            amount[i] = 0
+            trader.blocker[i] = trader.blocker[i] - 1
     return amount
