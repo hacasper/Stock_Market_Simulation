@@ -18,19 +18,19 @@ RSI_Trader,Adv_Trader,Hill_Trader,Variable_Trader,Tiered_Trader,AntiRSI_Trader,R
 
 #%%
 def main():
-    for t in range (buffer, buffer + 5000):
+    for t in range (buffer, dim):
 
         #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
              
         #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
             
-        #History Arrays
+        #History Arrays updated with new market price of time t
         Hist[t,0]=np.array(dfBTC.iloc[t,8])
         Hist[t,1]=np.array(dfETH.iloc[t,8])
         Hist[t,2]=np.array(dfLTC.iloc[t,8])
        
         
-        #trader 1: only RSI LIONEL
+        #trader 1: RSI trader: Strategy solely based on RSI and certain thresholds
         l[t-buffer,:], g[t-buffer,:], RSIndex[t-buffer,:], qty = RuleTrader(Hist[t-Lookback:t+1,:], RSP,g[t-buffer-1,:],l[t-buffer-1,:],RSIndex[t-buffer-1,:],RSI_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, RSI_Trader)
@@ -38,7 +38,7 @@ def main():
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         RSI_Trader.transactions = pd.concat([RSI_Trader.transactions, transactionrow_df])
        
-        #trader 2: Adv. Trader (Lionel)
+        #trader 2: ADV trader: Combines Predictions, RSI and own approximations of momentum and trend reversals 
         PredHist[t-buffer,:], qty = SmartTrader(Hist[t-Lookback:t+1,:], RSIndex[t-buffer,:], PredHist[t-buffer-10:t-buffer-2,:], Adv_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, Adv_Trader)
@@ -46,7 +46,7 @@ def main():
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Adv_Trader.transactions = pd.concat([Adv_Trader.transactions, transactionrow_df])
        
-        #trader 3: 3 times up: sell, 3 times down: buy
+        #trader 3: Hill trader: Whenever there is a hill, we trade ==> 3 up: buy, 3 down: sell (counterintuitive)
         qty = HillTrade(Hist[t-5:t+1,:],Hill_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, Hill_Trader)
@@ -54,7 +54,7 @@ def main():
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Hill_Trader.transactions = pd.concat([Hill_Trader.transactions, transactionrow_df])
  
-        #trader 4: Variable Risk Trader
+        #trader 4: Variable Trader: Same as RSI but easily adjusted thresholds
         qty = JackTrader(Hist[t-Lookback:t+1,:],RSIndex[t-buffer,:],Variable_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, Variable_Trader)
@@ -62,7 +62,7 @@ def main():
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Variable_Trader.transactions = pd.concat([Variable_Trader.transactions, transactionrow_df])
 
-        #Tiered RSI trader
+        #trader 5: Tiered RSI Trader: Multiple levels of RSI to avoid thresholds, varying amounts
         qty = TieredTrader(Hist[t-Lookback:t+1,:], RSIndex[t-buffer,:], Tiered_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, Tiered_Trader)
@@ -70,7 +70,7 @@ def main():
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Tiered_Trader.transactions = pd.concat([Tiered_Trader.transactions, transactionrow_df])
  
-        #ANTI trade rule Trader
+        #trader 6: Anti RSI threshold trader, should lose money if the theories are correct
         qty = LTrader(Hist[t-5:t+1,:],RSIndex[t-buffer,:],AntiRSI_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, AntiRSI_Trader)
@@ -78,7 +78,7 @@ def main():
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         AntiRSI_Trader.transactions = pd.concat([AntiRSI_Trader.transactions, transactionrow_df])
 
-        #RandomTrader
+        #trader 7: Random Trader, randomly choses if buy, sell or hold and uses that decision
         qty = RandTrader(Hist[t-5:t+1,:], Random_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, Random_Trader)
@@ -86,16 +86,15 @@ def main():
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Random_Trader.transactions = pd.concat([Random_Trader.transactions, transactionrow_df])
 
-       #Prediction Only Trading: 
+       #trader 8: Prediction Trader, Heavily relies on his prediction algorithms to make trading decisions, less on other inputs
         qty = PredTrader(PredHist[t-buffer,:],Hist[t-Lookback:t+1,:], Pred_Trader)
-
         for i in range (0,3):
             executeOrder(qty[i], i, t, Pred_Trader)
         transactionrow = [t, "Pred_Trader", Pred_Trader.portfolio[0], Pred_Trader.portfolio[1], Pred_Trader.portfolio[2], Pred_Trader.bank, Pred_Trader.order[0], Pred_Trader.order[1], Pred_Trader.order[2]]
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Pred_Trader.transactions = pd.concat([Pred_Trader.transactions, transactionrow_df])
        
-        #InsiderTrader
+        #trader 9: InsiderTrader, gets access about future stock prices, and with a certain likelyhood receives that info and uses it to trade
         if t<dim-1446:
             Insider=[np.mean(dfBTC.iloc[t+1440:t+1446,8]),np.mean(dfETH.iloc[t+1440:t+1446,8]),np.mean(dfLTC.iloc[t+1440:t+1446,8])]
         if t>=dim-1446:
@@ -107,7 +106,7 @@ def main():
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Insider_Trader.transactions = pd.concat([Insider_Trader.transactions, transactionrow_df])
 
-        #ShuffleTrader
+        #trader 10: ShuffleTrader, can sell coins in order to do big buys of coins at good moments in time.
         qty = ShuffleTrader(Hist[t-Lookback:t+1,:],RSIndex[t-buffer,:],Shuffle_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, Shuffle_Trader)
