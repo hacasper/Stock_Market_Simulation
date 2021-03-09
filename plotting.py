@@ -13,6 +13,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 btcData = pd.read_csv("Data/Bitcoin_Min_Jan20.csv")
+ethData = pd.read_csv("Data/Ether_Min_Jan20.csv")
+ltcData = pd.read_csv("Data/Lite_Min_Jan20.csv")
 summaryData = pd.read_csv("summary.csv")
 #print(summaryData)
 dim = summaryData.shape[0]
@@ -64,13 +66,40 @@ def update_graph_scatter(n):
                     range=[min(X),max(X)]),yaxis = 
                     dict(range = [min(Y),max(Y)]),
                     )}
-
+# %% 
 if __name__ == '__main__':
-    app.run_server()
+    #app.run_server()
+    bitcoin_candelstick = go.Figure(data=[go.Candlestick(
+    x=btcData['time_period_start'],
+    open=btcData['price_open'], high=btcData['price_high'],
+    low=btcData['price_low'], close=btcData['price_close'],
+    increasing_line_color= 'cyan', decreasing_line_color= 'gray'
+)])
+
+bitcoin_candelstick.show()
+
+ethereum_candelstick = go.Figure(data=[go.Candlestick(
+    x=ethData['time_period_start'],
+    open=ethData['price_open'], high=ethData['price_high'],
+    low=ethData['price_low'], close=ethData['price_close'],
+    increasing_line_color= 'lime', decreasing_line_color= 'gray'
+)])
+
+ethereum_candelstick.show()
+
+litecoin_candelstick = go.Figure(data=[go.Candlestick(
+    x=ltcData['time_period_start'],
+    open=ltcData['price_open'], high=ltcData['price_high'],
+    low=ltcData['price_low'], close=ltcData['price_close'],
+    increasing_line_color= 'papayawhip', decreasing_line_color= 'gray'
+)])
+
+litecoin_candelstick.show()
+
 
 # %%
 
-def Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader,Insider_Trader,Shuffle_Trader):
+def Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader,Insider_Trader):
     #%% Figure 1: 3 Coins Comparison, Coin Valueas in Dollars  
     
     base = dt.date(2020, 1, 1)
@@ -109,17 +138,17 @@ def Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_
     fig.show()    
     
     #%% Figure 2:
-    # Total worth as a function of time (sum of portfolio value plus bank)    
+        
     fig2 = plt.figure()
-    for i in range(1,10):
+    for i in range(1,8):
         plt.plot(Sum.table.iloc[:,0],Sum.table.iloc[:,i])
-    plt.legend(['Rule Trader', 'Advanced Trader', 'Up-Down Trader', 'Jacks Trader', 'Tiered Trader','Random Trader','Losing Trader','Insider Trader','Shuffle_Trader'])
+    plt.legend(['Rule Trader', 'Advanced Trader', 'Up-Down Trader', 'Jacks Trader', 'Tiered Trader','Random Trader','Losing Trader','Insider Trader'])
     plt.title('Trader Performance January 2020')
     fig2.show()
     
     return
 
-def Analyze(Sum,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader,Shuffle_Trader):
+def Analyze(Sum,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader):
     # Get info about total trades
     # Get info about optimal trades
     # Get info about anything else you migth be interested in.
