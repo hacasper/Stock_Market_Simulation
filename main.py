@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from trader import iniTrader, RuleTrader, SmartTrader, TieredTrader, HillTrade, JackTrader, LTrader, RandTrader, PredTrader, InsiderTrader, ShuffleTrader
 from market import Loader, SetUp, executeOrder, summarize, difference
-from plotting import  Plotter#, Analyze
+from plotting import  Plotter, Analyze
 #%%
 # Load Historical Stock data:
 dfBTC, dfETH, dfLTC, dim = Loader()
@@ -134,12 +134,24 @@ if __name__ == "__main__":
     print(Shuffle_Trader.transactions)
     print(Sum.table)
     print(Diff.table)
-    Sum.table.to_csv('summary.csv')
+    Sum.table.to_csv('summaryFINAL.csv')
 
 #%%
 #Plot stuff.
-Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Variable_Trader,Tiered_Trader,AntiRSI_Trader,Random_Trader,Insider_Trader,Shuffle_Trader)
+Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Variable_Trader,Tiered_Trader,AntiRSI_Trader,Random_Trader,Pred_Trader,Insider_Trader,Shuffle_Trader)
 #%%a
+Analyze(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,'./Figures/RSI_Trader.pdf')
+Analyze(Sum,buffer,dfBTC,dfETH,dfLTC,Adv_Trader,'./Figures/Advanced_Trader.pdf')
+Analyze(Sum,buffer,dfBTC,dfETH,dfLTC,Hill_Trader,'./Figures/Momentum_Trader.pdf')
+Analyze(Sum,buffer,dfBTC,dfETH,dfLTC,Variable_Trader,'./Figures/Variable_Trader.pdf')
+Analyze(Sum,buffer,dfBTC,dfETH,dfLTC,Tiered_Trader,'./Figures/Tiered_Trader.pdf')
+Analyze(Sum,buffer,dfBTC,dfETH,dfLTC,AntiRSI_Trader,'./Figures/AntiRSI_Trader.pdf')
+Analyze(Sum,buffer,dfBTC,dfETH,dfLTC,Random_Trader,'./Figures/Random_Trader.pdf')
+Analyze(Sum,buffer,dfBTC,dfETH,dfLTC,Pred_Trader,'./Figures/Predictions_Trader.pdf')
+Analyze(Sum,buffer,dfBTC,dfETH,dfLTC,Insider_Trader,'./Figures/Insider_Trader.pdf')
+Analyze(Sum,buffer,dfBTC,dfETH,dfLTC,Shuffle_Trader,'./Figures/Extreme_Trader.pdf')
+
+#%%
 '''
 base = dt.date(2020, 1, 1)
 arr = list([base + dt.timedelta(weeks=i) for i in range(5)])
@@ -157,23 +169,8 @@ plt.show()
 '''
 
 
-
-
-
-#Total Worth: 
-    
-# RT=np.sum(RSI_Trader.portfolio*Hist[buffer+np.shape(RSI_Trader.transactions)[0]-1,:])+RSI_Trader.bank
-# AT=np.sum(Adv_Trader.portfolio*Hist[buffer+np.shape(Adv_Trader.transactions)[0]-1,:])+Adv_Trader.bank
-# HT=np.sum(Hill_Trader.portfolio*Hist[buffer+np.shape(Hill_Trader.transactions)[0]-1,:])+Hill_Trader.bank
-# JT=np.sum(Jack_Trader.portfolio*Hist[buffer+np.shape(Jack_Trader.transactions)[0]-1,:])+Jack_Trader.bank
-# TT=np.sum(Tiered_Trader.portfolio*Hist[buffer+np.shape(Tiered_Trader.transactions)[0]-1,:])+Tiered_Trader.bank
-# LT=np.sum(Loser_Trader.portfolio*Hist[buffer+np.shape(Loser_Trader.transactions)[0]-1,:])+Loser_Trader.bank
-# RT=np.sum(Random_Trader.portfolio*Hist[buffer+np.shape(Random_Trader.transactions)[0]-1,:])+Random_Trader.bank
-# plt.plot(Mins[0:10000],PredHist[0:10000])
-# plt.plot(Mins[0:10000],Hist[buffer:buffer+10000,0])
+# Mins=np.array(list(range(0,horizon)))
+# plt.plot(Mins[-10000:],PredHist[-10000:,0])
+# plt.plot(Mins[-10000:],Hist[dim-10000:,0])
 # plt.show()
-Mins=np.array(list(range(0,horizon)))
-plt.plot(Mins[-10000:],PredHist[-10000:,0])
-plt.plot(Mins[-10000:],Hist[dim-10000:,0])
-plt.show()
 # %%

@@ -20,6 +20,13 @@ class trader:
         self.transactions = transactions
         self.blocker = [0,0,0]
         self.tradeworth = [0,0,0]
+        self.totBuys=[]
+        self.totSells=[]
+        self.posSells=[]
+        self.negSells=[]
+        self.dif=[]
+        self.tsell=[]
+        self.tbuy=[]
         
 class market:
     def __init__(self, ticker, date, price):

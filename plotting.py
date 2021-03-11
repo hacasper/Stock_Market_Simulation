@@ -63,46 +63,43 @@ def update_graph_scatter(n):
     print(list(Y))
     return {'data': [data],
             'layout' : go.Layout(xaxis=dict(
-                    range=[min(X),max(X)]),yaxis = 
-                    dict(range = [min(Y),max(Y)]),
+                    range=[0,40000]),yaxis = 
+                    dict(range = [0,4000]),
                     )}
 # %% 
-if __name__ == '__main__':
+#if __name__ == '__main__':
     #app.run_server()
-    bitcoin_candelstick = go.Figure(data=[go.Candlestick(
-    x=btcData['time_period_start'],
-    open=btcData['price_open'], high=btcData['price_high'],
-    low=btcData['price_low'], close=btcData['price_close'],
-    increasing_line_color= 'cyan', decreasing_line_color= 'gray'
-)])
+#     bitcoin_candelstick = go.Figure(data=[go.Candlestick(
+#     x=btcData['time_period_start'],
+#     open=btcData['price_open'], high=btcData['price_high'],
+#     low=btcData['price_low'], close=btcData['price_close'],
+#     increasing_line_color= 'cyan', decreasing_line_color= 'gray'
+# )])
 
-bitcoin_candelstick.show()
+# bitcoin_candelstick.show()
 
-ethereum_candelstick = go.Figure(data=[go.Candlestick(
-    x=ethData['time_period_start'],
-    open=ethData['price_open'], high=ethData['price_high'],
-    low=ethData['price_low'], close=ethData['price_close'],
-    increasing_line_color= 'lime', decreasing_line_color= 'gray'
-)])
+# ethereum_candelstick = go.Figure(data=[go.Candlestick(
+#     x=ethData['time_period_start'],
+#     open=ethData['price_open'], high=ethData['price_high'],
+#     low=ethData['price_low'], close=ethData['price_close'],
+#     increasing_line_color= 'lime', decreasing_line_color= 'gray'
+# )])
 
-ethereum_candelstick.show()
+# ethereum_candelstick.show()
 
-litecoin_candelstick = go.Figure(data=[go.Candlestick(
-    x=ltcData['time_period_start'],
-    open=ltcData['price_open'], high=ltcData['price_high'],
-    low=ltcData['price_low'], close=ltcData['price_close'],
-    increasing_line_color= 'papayawhip', decreasing_line_color= 'gray'
-)])
+# litecoin_candelstick = go.Figure(data=[go.Candlestick(
+#     x=ltcData['time_period_start'],
+#     open=ltcData['price_open'], high=ltcData['price_high'],
+#     low=ltcData['price_low'], close=ltcData['price_close'],
+#     increasing_line_color= 'papayawhip', decreasing_line_color= 'gray'
+# )])
 
-litecoin_candelstick.show()
+# litecoin_candelstick.show()
 
 
 # %%
-
-def Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader,Insider_Trader,Shuffle_Trader):
-    #%% Figure 1: 3 Coins Comparison, Coin Values in Dollars  
-
-    
+def Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Variable_Trader,Tiered_Trader,AntiRSI_Trader,Random_Trader,Pred_Trader,Insider_Trader,Shuffle_Trader):
+    #Figure 1: 3 Coins Comparison, Coin Values in Dollars  
     base = dt.date(2020, 1, 1)
     dim=min([dfBTC.shape[0],dfETH.shape[0],dfLTC.shape[0]])
     horizon=dim-buffer
@@ -137,20 +134,100 @@ def Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_
     axs[2].vlines(0,min(dfLTC.iloc[0:dim,8]),max(dfLTC.iloc[0:dim,8]),colors='k',linestyles='dashed')
    
     fig.show()    
-    
-    #%% Figure 2:
+    plt.savefig('./Figures/Coin_Performance_January_2020.pdf')
+    # Figure 2:
         
     fig2 = plt.figure()
-    for i in range(1,10):
+    for i in range(1,11):
         plt.plot(Sum.table.iloc[:,0],Sum.table.iloc[:,i])
-    plt.legend(['Rule Trader', 'Advanced Trader', 'Up-Down Trader', 'Jacks Trader', 'Tiered Trader','Random Trader','Losing Trader','Insider Trader','Insider Trader','Emotional Trader'])
+    plt.legend(['Rule Trader','Advanced Trader','Momentum Trader','Variable Trader','Tiered Trader','Anti RSI Trader','Random Trader','Prediction Trader','Insider Trader','Shuffle Trader'],loc="upper left", bbox_to_anchor=(1,1))
     plt.title('Trader Performance January 2020')
     fig2.show()
+    plt.savefig('./Figures/Trader_Performance_January_2020.pdf')
     
     return
+#%%
+def Analyze(Sum,buffer,dfBTC,dfETH,dfLTC,trader,name):
+    base = dt.date(2020, 1, 7)
+    dim=min([dfBTC.shape[0],dfETH.shape[0],dfLTC.shape[0]])
+    horizon=dim-buffer
+    arr = list([base + dt.timedelta(weeks=i) for i in range(4)])
+    tik = list([buffer, 2*buffer, 3*buffer,4*buffer])   
+    prices=np.zeros([Sum.table.shape[0],3])
+    totBuys=np.zeros([3])
+    Buy=np.zeros([3])
+    totSells=np.zeros([3])
+    posSells=np.zeros([3])
+    negSells=np.zeros([3])
+    dif=np.zeros([Sum.table.shape[0],3])
+    tsell=np.zeros([1,3])
+    tbuy=np.zeros([1,3])
+    for i in range (0,Sum.table.shape[0]):
+        prices[i,0]=dfBTC.iloc[buffer+i,8]
+        prices[i,1]=dfETH.iloc[buffer+i,8]
+        prices[i,2]=dfLTC.iloc[buffer+i,8]
+        if any (trader.transactions.iloc[i,6:9]==1): #See if we bought
+            for j in range(0,3):
+                if trader.transactions.iloc[i,6+j]== 1:
+                    totBuys[j]=totBuys[j]+1
+                    Buy[j]=prices[i,j]
+                    tbuy[np.int(totBuys[j]-1),j]=buffer+i
+                    tbuy=np.append(tbuy,np.zeros([1,3]),axis=0)
+        if any (trader.transactions.iloc[i,6:9]==-1):
+            for j in range(0,3):
+                if trader.transactions.iloc[i,6+j]==-1: #See if we sold
+                    totSells[j]=totSells[j]+1
+                    tsell[np.int(totSells[j]-1),j]=buffer+i
+                    tsell=np.append(tsell,np.zeros([1,3]),axis=0)
+                    dif[i,j]=prices[i,j]-Buy[j] #Calculate difference
+                    if prices[i,j] >= Buy[j]:
+                        posSells[j]=posSells[j]+1
+                    else:
+                        negSells[j]=negSells[j]+1
+    trader.totBuys=totBuys
+    trader.totSells=totSells
+    trader.posSells=posSells
+    trader.negSells=negSells
+    trader.dif=dif
+    trader.tsell=tsell
+    trader.tbuy=tbuy
+    
+    
+    fig1, axs1 = plt.subplots(3, sharex=True, sharey=False)
+    plt.setp(axs1, xticks=tik, xticklabels=arr)
+    plt.subplots_adjust(hspace=0.5)
+    fig1.suptitle('Trader Perfomance Depending on Cryptocurrency')
 
-def Analyze(Sum,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader):
+    axs1[0].plot(Sum.table.iloc[:,0], dfBTC.iloc[buffer:,8])
+    axs1[0].plot(tbuy[0:np.int(totBuys[0]),0],dfBTC.iloc[tbuy[0:np.int(totBuys[0]),0],8],'r.')
+    axs1[0].plot(tsell[0:np.int(totSells[0]),0],dfBTC.iloc[tsell[0:np.int(totSells[0]),0],8],'g.')
+    axs1[0].set_title('Bitcoin Trading')
+
+    axs1[1].plot(Sum.table.iloc[:,0], dfETH.iloc[buffer:,8])
+    axs1[1].plot(tbuy[0:np.int(totBuys[1]),1],dfETH.iloc[tbuy[0:np.int(totBuys[1]),1],8],'r.')
+    axs1[1].plot(tsell[0:np.int(totSells[1]),1],dfETH.iloc[tsell[0:np.int(totSells[1]),1],8],'g.')
+    axs1[1].set_title('Ethereum Trading')
+    axs1[1].set_ylabel('Dollar Amount')
+    
+    axs1[2].plot(Sum.table.iloc[:,0], dfLTC.iloc[buffer:,8])
+    axs1[2].plot(tbuy[0:np.int(totBuys[2]),2],dfLTC.iloc[tbuy[0:np.int(totBuys[2]),2],8],'r.')
+    axs1[2].plot(tsell[0:np.int(totSells[2]),2],dfLTC.iloc[tsell[0:np.int(totSells[2]),2],8],'g.')
+    axs1[2].set_title('Litecoin Trading')
+    axs1[2].set_xlabel('Time')
+    fig1.show()    
+    plt.savefig(name)
+    return trader.totBuys, trader.totSells, trader.posSells, trader.negSells, trader.dif, trader.tsell, trader.tbuy
+    # for i in range (0,Sum.table.shape[0]):
+    #     for j in range(0,3):
+    #         if trader.transactions.iloc[i,6+j] == 1:
+                
+                
+            
+            #traders=[RSI_Trader.transactions.iloc[i,j],Adv_Trader.transactions.iloc[i,j],Hill_Trader,Jack_Trader,Tiered_Trader,Loser_Trader,Random_Trader,Insider_Trader,Shuffle_Trader]
+            
+    
+    
     # Get info about total trades
+    
     # Get info about optimal trades
     # Get info about anything else you migth be interested in.
-    return

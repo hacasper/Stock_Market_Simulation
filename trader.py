@@ -55,7 +55,7 @@ def RSIblind(Hist,RSP,gain,loss,RSI):
         dim=var1.shape[0]
         for j in range(0,3): #Loop over 3 Coins
             gain[j] = 0.000001
-            loss[j] = 0.000001
+            loss[j] = 0.000001 #avoid division by zero
             for i in range(0,dim-1): #Loop over RSP
                 if var1[i,j]>0:
                     gain[j] = gain[j] + var1[i,j] #add gains
@@ -68,13 +68,13 @@ def RSIblind(Hist,RSP,gain,loss,RSI):
         return gain, loss, rsind #Return 3*(gain, loss, rsind) for the 3 coins
     else:
         val=Hist[-RSP:,:]
-        var1=np.diff(val,axis=0)
+        var1=np.diff(val,axis=0)#Returns vector of 14 diff
         for j in range(0,3):
-            if var1[-1,j] > 0:
+            if var1[-1,j] > 0:#if current dif positive
                 cg = var1[-1,j]
                 cl = 0
             else:
-                cl = -var1[-1,j]
+                cl = -var1[-1,j]#if current dif negative
                 cg = 0
             gain[j] = (gain[j]*(RSP-2)+cg)/14
             loss[j] = (loss[j]*(RSP-2)+cl)/14  
@@ -102,6 +102,9 @@ def RuleTrader(Hist,RSP,gain,loss,RSI,trader):
             trader.order[j] = 1
             amount[j] = np.floor(fac*(maxPortfolio[j]-trader.portfolio[j])*10)/10
             trader.blocker[j]=40
+        if amount[j]==0:
+            trader.order[j]=0
+            trader.blocker[j]=trader.blocker[j]-1
     return loss,gain,rsindex,amount
     
 def TieredTrader(Hist,rsindex,trader):
@@ -129,11 +132,11 @@ def TieredTrader(Hist,rsindex,trader):
         elif 60 > rsindex[coin] >= 50: #and order != 1:
             trader.order[coin] = 0
             amount[coin] = 0
-            trader.blocker[coin]=5
+            trader.blocker[coin]=trader.blocker[coin]-1
         elif 50 > rsindex[coin] >= 40: #and order != 1:
             trader.order[coin] = 0
             amount[coin] = 0
-            trader.blocker[coin]=5
+            trader.blocker[coin]=trader.blocker[coin]-1
         elif 40 > rsindex[coin] >= 30 and trader.blocker[coin]<=0: #and order != 1:
             trader.order[coin] = 1
             amount[coin] = (1/4)*trader.bank/Hist[-1,coin]
@@ -215,46 +218,18 @@ def SmartTrader(Hist, RSI, PredHist, trader):
     amount=[0,0,0]
     trader.order=[0,0,0]
     for i in range(0,3):
-        '''
-        If sloppes1[i]<0 and slopes2[i]>0 and predi[i]>Hist[-1,i]:
-            buy
-        elif opposite
-            sell
-        '''
+            #Condition 1: 
         if trader.blocker[i] <=0 and predi[i]>Hist[-1,i] and slope[i]<slopes1[i]<0<slopes2[i] and RSI[i]<38 and trader.bank and trader.tradeworth[i]==0: 
             trader.order[i]=1
             trader.blocker[i]=80
             amount[i]=np.floor(0.8*10*(maxPortfolio[i]-trader.portfolio[i]))/10
             trader.tradeworth[i]=Hist[-1,i]
-        # elif predi[i]>Hist[-1,i] and dif[i]>0 and RSI[i]<50 and trader.bank and trader.blocker[i] <=0 and means[i]>means3[i]:
-        #     trader.order[i]=1
-        #     trader.blocker[i]=100
-        #     amount[i]=np.floor(0.6*10*(maxPortfolio[i]-trader.portfolio[i]))/10
-        
-       # elif predi[i]>Hist[-1,i] and RSI[i]<50 and trader.bank:
-            # trader.order[i]=1
-            # amount[i]=np.floor(0.2*10*(maxPortfolio[i]-trader.portfolio[i]))/10
-        #elif dif[i]>0 and RSI[i]<50 and trader.bank:
-            # trader.order[i]=1
-            # amount[i]=np.floor(0.2*10*(maxPortfolio[i]-trader.portfolio[i]))/10
+
         if trader.blocker[i] <=0 and predi[i]<Hist[-1,i] and slope[i]>slopes1[i]>0>slopes2[i] and RSI[i]>68 and trader.portfolio[i] and Hist[-1,i]*1.05>trader.tradeworth[i]:
             trader.order[i]=-1
             trader.blocker[i]=80
             amount[i]=np.floor(0.9*10*trader.portfolio[i])/10
             trader.tradeworth[i]=0
-        #elif predi[i]<Hist[-1,i] and RSI[i]>70 and trader.portfolio[i]:
-            # trader.order[i]=-1
-            # amount[i]=np.floor(0.2*10*trader.portfolio[i])/10
-        #elif dif[i]<0 and RSI[i]>70 and trader.portfolio[i]:
-            # trader.order[i]=-1
-            # amount[i]=np.floor(0.2*10*trader.portfolio[i])/10
-        # if predi[i]>Hist[-1,i]:
-        #     trader.order[i]=1
-        #     amount[i]=0.2*(maxPortfolio[i]-trader.portfolio[i])
-        # if predi[i]<Hist[-1,i]:
-        #     trader.order[i]=-1
-        #     amount[i]=0.2*trader.portfolio[i]
-            
             
     if any(trader.portfolio*Hist[-1,:]>THIRDworth*1.5):
         for i in range (0,3):
@@ -287,15 +262,17 @@ def SmartTrader(Hist, RSI, PredHist, trader):
 def HillTrade(Hist,trader):
     amount=[0,0,0]
     for j in range (0,3):
-        if Hist[-1,j] > Hist[-2,j] > Hist[-3,j]:
+        if Hist[-1,j] > Hist[-2,j] > Hist[-4,j]: #If it's going up: SELL
             trader.order[j]=-1
             amount[j]=trader.portfolio[j]
-        elif Hist[-1,j] < Hist[-2,j] < Hist[-3,j]:
+        elif Hist[-1,j] < Hist[-2,j] < Hist[-3,j]: #If it's going down: BUY
             trader.order[j]=1
             amount[j]=np.floor(trader.bank/Hist[-1,j]/3)
         else:
             trader.order[j]=0
             amount[j]=0
+        if amount[j]==0:
+            trader.order[j]=0
     return amount
             
 def LTrader(Hist,rsindex,trader):
@@ -309,7 +286,7 @@ def LTrader(Hist,rsindex,trader):
             trader.order[j]=-1
             amount[j]=trader.portfolio[j]
             trader.blocker[j]=50
-        else:
+        elif amount[j]==0:
             trader.order[j]=0
             amount[j]=0
             trader.blocker[j]=trader.blocker[j]-1
@@ -322,8 +299,8 @@ def RandTrader(Hist,trader):
         if trader.order[j] == 0:
             amount[j] = 0
         elif trader.order[j] == 1:
-            amount[j] = 0.9*trader.bank/Hist[-1,j]
-        else: 
+            amount[j] = 0.3*trader.bank/Hist[-1,j]
+        elif trader.order[j]==-1: 
             trader.order[j] == -1
             amount[j] = trader.portfolio[j]
     return amount
@@ -418,21 +395,21 @@ def ShuffleTrader(Hist, RSI,trader):
     amountcoin = [0,0,0]
     amountcash = [0,0,0]
     for i in range(0,3):
-        if RSI[i] > sellrisk and trader.blocker[i] == 0: #and order != 1:
+        if RSI[i] > sellrisk and trader.blocker[i] <= 0: #and order != 1:
             trader.order[i] = -1
             amount[i] = (sellamount*trader.portfolio[i])*(1-0.0055)
-            trader.blocker[i] = 1440
+            trader.blocker[i] = 100
         #if RSI > sellrisk and order == 1:
             #order = 0
-        elif buyrisk < RSI[i] < sellrisk and trader.blocker[i] == 0:
+        elif buyrisk < RSI[i] < sellrisk and trader.blocker[i] <= 0:
             trader.order[i] = 0
             amount[i] = 0
             for m in range(0,3):
-                    if RSI[i] > buyrisk > RSI[m] and trader.blocker[m] == 0:
+                    if RSI[i] > buyrisk > RSI[m] and trader.blocker[m] <= 0:
                         trader.order[i] = -1
                         trader.order[m] = 1
-                        trader.blocker[i] = 1440
-                        trader.blocker[m] = 1440
+                        trader.blocker[i] = 100
+                        trader.blocker[m] = 100
                         amount[i] = (sellamount*trader.portfolio[i])*(1-0.0055)
                         amountcoin[m] = (buyamount*trader.bank/Hist[-1,m])*(1-0.0055)
                         amountcash[m] = amountcoin[m]*Hist[-1,m]
@@ -442,7 +419,7 @@ def ShuffleTrader(Hist, RSI,trader):
                         amount[i] = 0
                         trader.order[m] = 0
                         amount[m] = 0
-        elif RSI[i] < buyrisk and trader.blocker[i] == 0: #and order != -1:
+        elif RSI[i] < buyrisk and trader.blocker[i] <= 0: #and order != -1:
             trader.order[i] = 1
             amountcoin[i] = (buyamount*trader.bank/Hist[-1,i])*(1-0.0055)
             amountcash[i] = amountcoin[i]*Hist[-1,i]
