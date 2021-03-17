@@ -1,4 +1,9 @@
 #%%
+'''
+This file will run the Simulation and bring together all information in the 
+for loop. 
+'''
+# Download Libraries (for list of dependencies, check README)
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -17,13 +22,10 @@ buffer,Lookback,horizon,Hist,PredHist,mBTC,mETH,mLTC,RSP,g,l,RSIndex = SetUp(dim
 RSI_Trader,Adv_Trader,Hill_Trader,Variable_Trader,Tiered_Trader,AntiRSI_Trader,Random_Trader,Pred_Trader,Insider_Trader,Shuffle_Trader,Sum,Diff,cols,cols2,cols3 = iniTrader('RSI_Trader','Adv_Trader','Hill_Trader','Variable_Trader','Tiered_Trader','AntiRSI_Trader','Random_Trader','Pred_Trader','Insider_Trader','Shuffle_Trader')
 
 #%%
-def main():
+def main(): # Run the main Simulation
     for t in range (buffer, dim):
 
-        #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
-             
-        #indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
-            
+        #dfXYZ indices: 10=trades, 9=volume, 8=close, 7=low, 6=high, 5=open, 1 time open
         #History Arrays updated with new market price of time t
         Hist[t,0]=np.array(dfBTC.iloc[t,8])
         Hist[t,1]=np.array(dfETH.iloc[t,8])
@@ -47,7 +49,7 @@ def main():
         Adv_Trader.transactions = pd.concat([Adv_Trader.transactions, transactionrow_df])
        
         #trader 3: Hill trader: Whenever there is a hill, we trade ==> 3 up: buy, 3 down: sell (counterintuitive)
-        qty = HillTrade(Hist[t-5:t+1,:],Hill_Trader)
+        qty = HillTrade(Hist[t-6:t+1,:],Hill_Trader)
         for i in range (0,3):
             executeOrder(qty[i], i, t, Hill_Trader)
         transactionrow = [t, "Hill_Trader", Hill_Trader.portfolio[0], Hill_Trader.portfolio[1], Hill_Trader.portfolio[2], Hill_Trader.bank, Hill_Trader.order[0], Hill_Trader.order[1], Hill_Trader.order[2]]
@@ -114,16 +116,17 @@ def main():
         transactionrow_df = pd.DataFrame([transactionrow], columns=cols)
         Shuffle_Trader.transactions = pd.concat([Shuffle_Trader.transactions, transactionrow_df])
 
+        #Saves the trader data to a df for later analysis
         summarize(Sum,RSI_Trader,Adv_Trader,Hill_Trader,Variable_Trader,Tiered_Trader,AntiRSI_Trader,Random_Trader,Pred_Trader,Insider_Trader,Shuffle_Trader,t,Hist[t,:],cols2)
 
-        if t%1000 == 0:
+        if t%1000 == 0: #Receive Feedback every 10000 minutes
             print (Sum.table)
-
+    #Calculate the final difference from end of simulation to beginning of simulation
     difference(Sum,Diff,cols3)
 
 
 if __name__ == "__main__":
-    main()
+    main() #Print Transaction Tables, the Sum and Dif Tables
     print(RSI_Trader.transactions)
     print(Adv_Trader.transactions)
     print(Hill_Trader.transactions)
@@ -134,12 +137,14 @@ if __name__ == "__main__":
     print(Shuffle_Trader.transactions)
     print(Sum.table)
     print(Diff.table)
-    Sum.table.to_csv('summaryFINAL.csv')
+    Sum.table.to_csv('summary2.csv') #Save the table to csv
 
 #%%
-#Plot stuff.
+#Plot Data and save figures in figures folder
 Plotter(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,Adv_Trader,Hill_Trader,Variable_Trader,Tiered_Trader,AntiRSI_Trader,Random_Trader,Pred_Trader,Insider_Trader,Shuffle_Trader)
-#%%a
+#%%
+#Analyze Traders and save figures in figures folder
+# Calculates Trade Balances and identifies buy / sell signals
 Analyze(Sum,buffer,dfBTC,dfETH,dfLTC,RSI_Trader,'./Figures/RSI_Trader.pdf')
 Analyze(Sum,buffer,dfBTC,dfETH,dfLTC,Adv_Trader,'./Figures/Advanced_Trader.pdf')
 Analyze(Sum,buffer,dfBTC,dfETH,dfLTC,Hill_Trader,'./Figures/Momentum_Trader.pdf')
@@ -152,25 +157,9 @@ Analyze(Sum,buffer,dfBTC,dfETH,dfLTC,Insider_Trader,'./Figures/Insider_Trader.pd
 Analyze(Sum,buffer,dfBTC,dfETH,dfLTC,Shuffle_Trader,'./Figures/Extreme_Trader.pdf')
 
 #%%
-'''
-base = dt.date(2020, 1, 1)
-arr = list([base + dt.timedelta(weeks=i) for i in range(5)])
-tik = list([-buffer, 0, buffer, 2*buffer, 3*buffer])
-
+# Double Check Predicitons: These curves should overlap almost entirely!
 Mins=np.array(list(range(0,horizon)))
-ng=np.array(list(range(-buffer,0)))
-plt.title('Bitcoin Stockdata January 2020')
-plt.plot(ng,dfBTC.iloc[0:buffer,8])
-plt.plot(Mins,dfBTC.iloc[buffer:dim,8])
-plt.legend(['Data used for Models and Trends','Data used for Simulation'])
-plt.vlines(0,min(dfBTC.iloc[0:dim,8]),max(dfBTC.iloc[0:dim,8]),colors='k',linestyles='dashed')
-plt.xticks(tik,arr)
+plt.plot(Mins[-10000:],PredHist[-10000:,0])
+plt.plot(Mins[-10000:],Hist[dim-10000:,0])
 plt.show()
-'''
-
-
-# Mins=np.array(list(range(0,horizon)))
-# plt.plot(Mins[-10000:],PredHist[-10000:,0])
-# plt.plot(Mins[-10000:],Hist[dim-10000:,0])
-# plt.show()
 # %%

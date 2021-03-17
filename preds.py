@@ -3,10 +3,12 @@
 Created on Tue Jan 26 13:42:26 2021
 
 @author: Lionel
+This file allows the simulation to run predictions, if they are defined below:
 """
 
 # Source: https://www.kdnuggets.com/2018/11/keras-long-short-term-memory-lstm-model-predict-stock-prices.html
 
+#Imports
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -16,21 +18,11 @@ mo41 = load_model("PredModels/model50")
 mo42 = load_model("PredModels/model52")  
 
 
- # mod6 = load_model('PredModels/model16/')
-
-
-# Scaling Factors: Same as Used in Training!
-# def Pred16(prices):
-#     Lookback = 60
-#     mi = 31.8575
-#     ma = 269.22
-#     scaled = (prices[t-1-Lookback:t-1]-mi) / (ma-mi)
-#     X_test = np.array(scaled)
-#     X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
-#     Prsc = mo16.predict(X_test)
-#     Pr = Prsc*(ma-mi)+mi
-#     return Pr
-
+# Prediction function for every coin
+# The min Max come from the predictions.py in the data folder and were manually 
+# extracted. Important: Make sure Min Max match to trained model and ensure that
+# scaling function is the same. Furthermore, input shape and size must match
+# the inputs used for training of the model.
 def PredB(prices):
     mi = 1714.555
     ma = 16583.8

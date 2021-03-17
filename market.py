@@ -1,3 +1,9 @@
+'''
+This file enables the execution of trades, and the market also ensures that 
+only trades are done which are indeed feasible. In addition, the summary
+and diff tables are defined within this file.
+'''
+#Import Libraries
 import pandas as pd
 import numpy as np
 #Market and trader objects from
@@ -23,11 +29,14 @@ def SetUp(dim,dfBTC, dfETH, dfLTC):
     Lookback=75 #Amount of data that the Prediction Model Needs (60), but pass 75 
     # and then I only use 60 in the trader file itself
     horizon=dim-buffer #amount of timestamps in the for loop
-    Hist = np.zeros([dim,3])
-    PredHist = np.zeros([horizon,3])
-    Hist[0:buffer,0] = np.array(dfBTC.iloc[0:buffer,8])
+    Hist = np.zeros([dim,3]) #Initialize History 
+    PredHist = np.zeros([horizon,3]) #Initialize Prediction History
+    Hist[0:buffer,0] = np.array(dfBTC.iloc[0:buffer,8]) #Save the first week
+    #of data in the History array. This allows traders to access this data
+    #in the first step of the simulation (t=buffer)
     Hist[0:buffer,1] = np.array(dfETH.iloc[0:buffer,8])
     Hist[0:buffer,2] = np.array(dfLTC.iloc[0:buffer,8])
+    #Initialize the market for the first step of the simulation
     mBTC=market('BTC',dfBTC.iloc[buffer,1],dfBTC.iloc[buffer,8])
     mETH=market('ETH',dfETH.iloc[buffer,1],dfETH.iloc[buffer,8])
     mLTC=market('LTC',dfLTC.iloc[buffer,1],dfLTC.iloc[buffer,8])
@@ -38,10 +47,11 @@ def SetUp(dim,dfBTC, dfETH, dfLTC):
     l=np.zeros([horizon,3]) #current loss
     RSIndex = np.zeros([horizon,3]) #current RSI
 
-    
+    #Return it all to the main file
     return buffer,Lookback,horizon,Hist,PredHist,mBTC,mETH,mLTC,RSP,g,l,RSIndex
     
 
+#This function does nothing else than catching the current market price of a coin
 def getCurrentPrice(date, coin):
     if coin == 0:
         infoAtDate = dfBTC.iloc[date,:]
@@ -58,6 +68,10 @@ def getCurrentPrice(date, coin):
     else:
         print("invalid coin key")
         return 0
+    
+#This function is the market's brain. All trades are executed by calling this
+#function, it also houses the security mechanisms which ensure that only
+#realistically feasible trades are actually executed.
 def executeOrder (n, coin, date, trader): 
     #coin 0 : BTC
     #coin 1 : ETH
@@ -151,7 +165,10 @@ def executeOrder (n, coin, date, trader):
             #print("Removing " + str(n) + " shares from portfolio")
             #print("Trader has $" + str(trader.bank) + " in bank")
             #print("Trader has " + str(n) + " shares in portfolio")
-        
+
+#This function summarizes everything that happened at a certain instance and 
+#saves it to a single table. All traders and their transaction decisions, their
+#portfolio and their cash value are stored which allows later access.        
 def summarize(sumtable,trader1,trader2,trader3,trader4,trader5,trader6,trader7,trader8,trader9,trader10,t,Hist,cols2):
     s1=np.sum(trader1.portfolio*Hist)+trader1.bank
     s2=np.sum(trader2.portfolio*Hist)+trader2.bank
@@ -163,10 +180,12 @@ def summarize(sumtable,trader1,trader2,trader3,trader4,trader5,trader6,trader7,t
     s8=np.sum(trader8.portfolio*Hist)+trader8.bank
     s9=np.sum(trader9.portfolio*Hist)+trader9.bank
     s10=np.sum(trader10.portfolio*Hist)+trader10.bank
-    sumrow = [t, s1,s2,s3,s4,s5,s6,s7,s8,s9,s10]
+    sumrow = [t, s1,s2,s3,s4,s5,s6,s7,s8,s9,s10] #Re-format: one row
     sumrowdf=pd.DataFrame([sumrow], columns=cols2)
-    sumtable.table=pd.concat([sumtable.table, sumrowdf])
+    sumtable.table=pd.concat([sumtable.table, sumrowdf]) #append row
 
+#This table is built in the end of the simulation and just allows for easy
+#identification for primising and unpromising strategies.
 def difference(Sum,difftable,cols3):
     diffrow = np.array((Sum.table.iloc[-1,1:Sum.table.shape[1]])-(Sum.table.iloc[0,1:Sum.table.shape[1]]))
     diffrowdf=pd.DataFrame([diffrow], columns=cols3)

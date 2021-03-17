@@ -2,7 +2,7 @@
 """
 Created on Thu Jan 21 14:26:39 2021
 
-@author: nA
+In this file, required classes are defined and their attributes specified
 """
 
 
@@ -18,8 +18,9 @@ class trader:
         #order array: [BTC, ETH, LTC]
         #1: buy, 0: hold, -1: sell
         self.transactions = transactions
-        self.blocker = [0,0,0]
-        self.tradeworth = [0,0,0]
+        self.blocker = [0,0,0] #Required to block over-trading
+        self.tradeworth = [0,0,0] #Trader's Memory
+        #The rest is just used for analysis:
         self.totBuys=[]
         self.totSells=[]
         self.posSells=[]
@@ -29,6 +30,8 @@ class trader:
         self.tbuy=[]
         
 class market:
+    #creates market object which stores the date/time & price of a coin for 
+    #each instance in the simulation
     def __init__(self, ticker, date, price):
         self.ticker = ticker
         self.date = date
@@ -42,6 +45,7 @@ class market:
     #add market file here
         
 class summary:
+    #summary table was easiest to implement as a class with just a df in it.
     def __init__(self,DataFrame):
         self.table=DataFrame
 

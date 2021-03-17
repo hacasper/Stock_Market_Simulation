@@ -265,7 +265,7 @@ def HillTrade(Hist,trader):
         if Hist[-1,j] > Hist[-2,j] > Hist[-4,j]: #If it's going up: SELL
             trader.order[j]=-1
             amount[j]=trader.portfolio[j]
-        elif Hist[-1,j] < Hist[-2,j] < Hist[-3,j]: #If it's going down: BUY
+        elif Hist[-1,j] < Hist[-2,j] < Hist[-4,j]: #If it's going down: BUY
             trader.order[j]=1
             amount[j]=np.floor(trader.bank/Hist[-1,j]/3)
         else:
@@ -300,7 +300,7 @@ def RandTrader(Hist,trader):
             amount[j] = 0
         elif trader.order[j] == 1:
             amount[j] = 0.3*trader.bank/Hist[-1,j]
-        elif trader.order[j]==-1: 
+        elif trader.order[j]==-1 and trader.portfolio[j]: 
             trader.order[j] == -1
             amount[j] = trader.portfolio[j]
     return amount
@@ -312,7 +312,7 @@ def InsiderTrader(Hist,rsindex,Inside,trader):
     slope2=np.polyfit([1,2,3],Hist[-3:,:],1)[0]
     maxPortfolio=THIRDworth/Hist[-1,:]
     for j in range(0,3):
-        if Inside[j]>1.05*Hist[-1,j] and trader.blocker[j] <=100: #Insider information: price drop/gain of xy% within 1d
+        if Inside[j]>1.02*Hist[-1,j] and trader.blocker[j] <=100: #Insider information: price drop/gain of xy% within 1d
             if np.random.randint(5, size=1) == 2: #Only one out of x times he actually gets the info
                 trader.order[j]=1
                 trader.blocker[j]=1440
@@ -323,7 +323,7 @@ def InsiderTrader(Hist,rsindex,Inside,trader):
                     amount[j]=0.7*trader.bank/Hist[-1,j]
             else:
                 trader.order[j]=0
-        elif Inside[j]<1.05*Hist[-1,j] and trader.blocker[j] <=100 and trader.portfolio[j]:
+        elif Inside[j]<1.02*Hist[-1,j] and trader.blocker[j] <=100 and trader.portfolio[j]:
             if np.random.randint(5, size=1) == 2: #Only one out of x times he actually gets the info
                 if rsindex[j] > 80: #Only trade when certain conditions are met
                     trader.order[j]=-1
@@ -350,7 +350,7 @@ def InsiderTrader(Hist,rsindex,Inside,trader):
             trader.order[j]=1
             amount[j]=maxPortfolio[j]-trader.portfolio[j]
             trader.blocker[j]=100
-        elif trader.blocker[j]<=0 and rsindex[j]>75 and slope2[j]<0<slope[j]:
+        elif trader.blocker[j]<=0 and rsindex[j]>70 and slope2[j]<0<slope[j]:
             trader.order[j]=-1
             amount[j]=trader.portfolio[j]
             trader.blocker[j]=100
