@@ -23,14 +23,15 @@ import matplotlib.pyplot as plt
 btcData = pd.read_csv("Data/Bitcoin_Min_Jan20.csv")
 ethData = pd.read_csv("Data/Ether_Min_Jan20.csv")
 ltcData = pd.read_csv("Data/Lite_Min_Jan20.csv")
-summaryData = pd.read_csv("summary.csv")
+summaryData = pd.read_csv("summary2.csv")
 #print(summaryData)
-dim = summaryData.shape[0]
+#dim = summaryData.shape[0]
 
 #%%
 buffer= 24*60*7 #1 Week data to use for models
 
 #%% live plotting with dash
+'''
 X = deque(maxlen = 20)
 X.append(1)
 
@@ -74,6 +75,7 @@ def update_graph_scatter(n):
                     range=[0,40000]),yaxis = 
                     dict(range = [0,4000]),
                     )}
+'''
 # %% 
 #if __name__ == '__main__':
     #app.run_server()

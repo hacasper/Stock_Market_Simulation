@@ -137,7 +137,7 @@ if __name__ == "__main__":
     print(Shuffle_Trader.transactions)
     print(Sum.table)
     print(Diff.table)
-    Sum.table.to_csv('summary2.csv') #Save the table to csv
+    Sum.table.to_csv('summary.csv') #Save the table to csv
 
 #%%
 #Plot Data and save figures in figures folder
@@ -158,6 +158,7 @@ Analyze(Sum,buffer,dfBTC,dfETH,dfLTC,Shuffle_Trader,'./Figures/Extreme_Trader.pd
 
 #%%
 # Double Check Predicitons: These curves should overlap almost entirely!
+plt.figure()
 Mins=np.array(list(range(0,horizon)))
 plt.plot(Mins[-10000:],PredHist[-10000:,0])
 plt.plot(Mins[-10000:],Hist[dim-10000:,0])
