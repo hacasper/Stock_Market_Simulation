@@ -78,7 +78,11 @@ def update_graph_scatter(n):
 '''
 # %% 
 #if __name__ == '__main__':
+    #remove comment to run live plotting
     #app.run_server()
+
+
+#Candelstick charts for coin data
 #     bitcoin_candelstick = go.Figure(data=[go.Candlestick(
 #     x=btcData['time_period_start'],
 #     open=btcData['price_open'], high=btcData['price_high'],
